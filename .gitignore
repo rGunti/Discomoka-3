@@ -66,3 +66,7 @@ js/ts.js
 
 # Typescript builds
 build/
+
+# Configs
+/config/*
+!/config/default.json

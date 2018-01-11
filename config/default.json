@@ -1,0 +1,12 @@
+{
+    "database": {
+        "host": "127.0.0.1",
+        "port": 3306,
+        "db": "discomoka",
+        "user": "discomoka",
+        "pass": "discomoka"
+    },
+    "discord": {
+        "token": "<INSERT_YOUR_KEY_HERE>"
+    }
+}
