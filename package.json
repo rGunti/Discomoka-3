@@ -10,14 +10,19 @@
   "author": "Raphael \"rGunti\" Guntersweiler",
   "license": "MIT",
   "devDependencies": {
+    "@types/config": "0.0.33",
     "@types/debug": "0.0.30",
     "@types/node": "^9.3.0",
+    "@types/sequelize": "^4.27.1",
     "tsc": "^1.20150623.0",
     "tslint": "^5.9.1",
     "typescript": "^2.6.2"
   },
   "dependencies": {
+    "config": "^1.29.1",
     "debug": "^3.1.0",
-    "randomstring": "^1.1.5"
+    "mysql2": "^1.5.1",
+    "randomstring": "^1.1.5",
+    "sequelize": "^4.31.0"
   }
 }
