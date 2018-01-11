@@ -14,7 +14,7 @@
             ],
             "env": {
                 "NODE_ENV": "dev",
-                "DEBUG": "*"
+                "DEBUG": "discomoka3:*"
             },
             "preLaunchTask": "npm: build",
             "console": "integratedTerminal"

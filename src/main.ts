@@ -1,8 +1,13 @@
+import * as debug from 'debug';
+import { IDebugger } from 'debug';
+
 class Program {
+    static log:IDebugger = debug('discomoka3:main');
+
     public static main(args:string[]):void {
-        console.log('Hello world!');
+        Program.log(`Hello world!`);
         args.forEach(function(arg:string, index:number, array:string[]) {
-            console.log(` - Argument ${index}: ${arg}`);
+            Program.log(` - Argument ${index}: ${arg}`);
         });
     }
 }
