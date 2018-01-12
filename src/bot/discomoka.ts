@@ -140,7 +140,7 @@ export class DiscordBot {
             prefix: false
         })
         .registerGroups([
-            ['test_commands', 'Test Commands']
+            ['debug', 'Debug Commands']
         ]);
 
         let commandDirectory = join(__dirname, 'commands');
@@ -362,7 +362,7 @@ export class DiscordBot {
     }
 
     protected onCommandError(command:Command, err:Error, message:CommandMessage, args:string|{}|string[], fromPattern:boolean) {
-        this.eventLog(`Error on Command ${command.name}! Message was: ${message.author.tag}@(${message.channel.type})${message.channel.id} : ${message}`);
+        this.eventLog(`Error on Command ${command.name}! Message was: ${message.author.tag}@(${message.channel.type})${message.channel.id} : ${message.content}`);
     }
 
     protected onCommandPrefixChange(guild:Guild, prefix:string) {
