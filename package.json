@@ -1,13 +1,25 @@
 {
   "name": "discomoka3",
   "version": "3.0.0-alpha",
-  "description": "",
+  "description": "Discomoka 3 is (yet another) rewrite of the Momoka TeamSpeak / Discord Music bot featuring a lot more new features.",
   "main": "build/main.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "build": "tsc -p ."
   },
-  "author": "Raphael \"rGunti\" Guntersweiler",
+  "author": {
+    "name": "Raphael \"rGunti\" Guntersweiler",
+    "email": "raphael@rgunti.ch",
+    "url": "http://rgunti.ch"
+  },
+  "homepage": "http://rgunti.li/discomoka3",
+  "repository": {
+    "type": "git",
+    "url": "http://github.com/rgunti/discomoka3"
+  },
+  "bugs": {
+    "url": "http://github.com/rgunti/discomoka3/issues"
+  },
   "license": "MIT",
   "devDependencies": {
     "@rezonant/discord.js-typings": "^10.0.0",
@@ -30,6 +42,7 @@
     "moment": "^2.20.1",
     "moment-duration-format": "^2.1.1",
     "mysql2": "^1.5.1",
+    "pjson": "^1.0.9",
     "randomstring": "^1.1.5",
     "sequelize": "^4.31.0"
   }
