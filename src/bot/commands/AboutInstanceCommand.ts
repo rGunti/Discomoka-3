@@ -4,6 +4,7 @@ import { Command, CommandoClient, CommandMessage } from 'discord.js-commando';
 import { TextChannel, RichEmbed, Client, Message } from 'discord.js';
 import { Duration, Format, Moment } from 'moment';
 import * as pjson from 'pjson';
+import * as filesize from 'filesize';
 
 export class AboutInstanceCommand extends Command {
     static preparedData:PreparedData;
@@ -35,6 +36,8 @@ export class AboutInstanceCommand extends Command {
         let startup:Moment = moment().subtract(uptime);
         let startupStr:string = startup.format('YYYY-MM-DD HH:mm:ss');
 
+        let memoryUsage:NodeJS.MemoryUsage = process.memoryUsage();
+
         let response:RichEmbed = new RichEmbed()
             .setAuthor(this.client.user.username, this.client.user.avatarURL)
             .setTitle(`About Discomoka 3 (${data.AppName})`)
@@ -43,6 +46,10 @@ export class AboutInstanceCommand extends Command {
             .addField('Platform', `Node.JS ${process.version}`, true)
             .addField('Uptime', `${uptimeStr}\n${startupStr}`, true)
             .addField('Server Time', moment().format('YYYY-MM-DD HH:mm:ss'))
+            .addField('Memory Usage', 
+                `Heap: ${filesize(memoryUsage.heapUsed)} / ${filesize(memoryUsage.heapTotal)}\n` + 
+                `RSS: ${filesize(memoryUsage.rss)}`,
+                true)
             .addField('Links', data.Links, false)
             .setFooter(data.AppCopyright)
             .setColor(0x6B8AFB);
