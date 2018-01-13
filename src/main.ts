@@ -2,27 +2,36 @@ import * as debug from 'debug';
 import { IDebugger } from 'debug';
 import { DiscordBot } from './bot/discomoka';
 import { DbInstance } from './db/dbinstance';
+import * as config from 'config';
+import * as pjson from 'pjson';
 
 class Program {
     static log:IDebugger = debug('discomoka3:main');
 
     public static main(args:string[]):void {
-        Program.log(`Hello world!`);
-        args.forEach(function(arg:string, index:number, array:string[]) {
-            Program.log(` - Argument ${index}: ${arg}`);
-        });
+        let instanceName:string = config.get('instance.id');
+        Program.log(`Starting ${pjson.name} with Config Instance ${instanceName}`);
+
+        //Program.log(`Hello world!`);
+        //args.forEach(function(arg:string, index:number, array:string[]) {
+        //    Program.log(` - Argument ${index}: ${arg}`);
+        //});
 
         let dbInstance:DbInstance = new DbInstance(
-            'mysql',
-            '127.0.0.1', 3306,
-            'root', 'root',
-            'discomoka3',
-            { min: 0, max: 10, idle: 10000 }
+            config.get('database.dialect'),
+            config.get('database.host'), config.get('database.port'),
+            config.get('database.user'), config.get('database.pass'),
+            config.get('database.db'),
+            {
+                min: config.get('database.pool.min'), 
+                max: config.get('database.pool.max'), 
+                idle: config.get('database.pool.idle') 
+            }
         );
         dbInstance.connect();
 
         let bot:DiscordBot = new DiscordBot();
-        bot.start('MjI2Njg4ODQyNzA1NDAzOTA1.DTllJA.EdKryLguJ3EzNjbFYPOeJLjY6xM');
+        bot.start(config.get('discord.token'));
     }
 }
 

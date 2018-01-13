@@ -1,12 +1,21 @@
 {
     "database": {
+        "dialect": "mysql",
         "host": "127.0.0.1",
         "port": 3306,
         "db": "discomoka",
         "user": "discomoka",
-        "pass": "discomoka"
+        "pass": "discomoka",
+        "pool": {
+            "min": 0,
+            "max": 10,
+            "idle": 10000
+        }
     },
     "discord": {
         "token": "<INSERT_YOUR_KEY_HERE>"
+    },
+    "instance": {
+        "id": "default"
     }
 }
