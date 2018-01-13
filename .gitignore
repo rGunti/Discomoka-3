@@ -70,3 +70,6 @@ build/
 # Configs
 /config/*
 !/config/default.json
+
+# Some more exeptions
+!/typings/discord.js-commando.d.ts
