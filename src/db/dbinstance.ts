@@ -3,6 +3,8 @@ import { IDebugger } from "debug";
 import * as debug from 'debug';
 import { Song } from "./model/Song";
 import * as randomstring from 'randomstring';
+import { PermissionInitializer } from "../perm/perminitializer";
+import { Permission } from './model/Permission';
 
 export class DbInstance {
     seqInstance:Sequelize;
@@ -35,7 +37,8 @@ export class DbInstance {
 
         this.debugLog(`Adding models ...`);
         seq.addModels([
-            Song
+            Song,
+            Permission
         ]);
 
         this.seqInstance = seq;
@@ -54,6 +57,8 @@ export class DbInstance {
                     sourceLink: 'mysql://localhost',
                     source: self.instanceID
                 }).save();
+
+                PermissionInitializer.initialize();
             })
             .catch((err:Error) => {
                 self.errorLog(`Connection to database failed due to an error:\n` + 

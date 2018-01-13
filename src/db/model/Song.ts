@@ -7,7 +7,8 @@ import { Sequelize } from 'sequelize-typescript/lib/models/Sequelize';
 @Table({
     tableName: 'songs',
     paranoid: true,
-    underscored: true
+    underscored: true,
+    timestamps: false
 })
 export class Song extends Model<Song> {
     @Column({
