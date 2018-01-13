@@ -31,6 +31,7 @@
     "@types/node": "^9.3.0",
     "@types/randomstring": "^1.1.6",
     "@types/sequelize": "^4.27.2",
+    "sequelize-typescript": "^0.6.2",
     "tsc": "^1.20150623.0",
     "tslint": "^5.9.1",
     "typescript": "^2.6.2"
@@ -46,6 +47,7 @@
     "mysql2": "^1.5.1",
     "pjson": "^1.0.9",
     "randomstring": "^1.1.5",
+    "reflect-metadata": "^0.1.10",
     "sequelize": "^4.31.0"
   }
 }
