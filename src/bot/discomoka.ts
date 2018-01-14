@@ -1,10 +1,12 @@
 import * as debug from 'debug';
 import * as randomstring from 'randomstring';
 import { Message, Guild, Channel, ClientUserGuildSettings, ClientUserSettings, Emoji, User, GuildMember, Collection, Snowflake, MessageReaction, Role, DMChannel, GroupDMChannel, TextChannel, GuildChannel, GuildMemberEditData } from 'discord.js';
-import { CommandoClient, Command, CommandRegistry, CommandMessage, CommandGroup, ArgumentType, Argument } from 'discord.js-commando';
+import { CommandoClient, Command, CommandRegistry, CommandMessage, CommandGroup, ArgumentType, Argument, SQLiteProvider } from 'discord.js-commando';
 import { join } from 'path';
 import { RateLimitInfo } from './../utils/additionalTypings';
 import { existsSync } from 'fs';
+import * as config from 'config';
+import * as sqlite from 'sqlite';
 
 export class DiscordBot {
     protected instanceID:string;
@@ -34,7 +36,8 @@ export class DiscordBot {
         let self = this;
         this.debugLog('Initializing CommandoClient...')
         let client = new CommandoClient({
-            commandPrefix: "" // TODO: Config
+            commandPrefix: config.get('discord.defaultCommandPrefix'),
+            owner: config.get('discord.botOwner')
         });
 
         // Register Events
@@ -150,6 +153,11 @@ export class DiscordBot {
         } else {
             this.errorLog(`Command Directory ${commandDirectory} does not exist. Are commands built?`);
         }
+
+        client.setProvider(
+            sqlite.open(config.get('discord.settingsStorage'))
+                .then(db => new SQLiteProvider(db))
+        ).catch(console.error);
 
         this.client = client;
     }

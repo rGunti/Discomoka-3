@@ -13,14 +13,17 @@
         }
     },
     "discord": {
-        "token": "<INSERT_YOUR_KEY_HERE>"
+        "token": "<INSERT_YOUR_KEY_HERE>",
+        "botOwner": "<INSERT_USER_ID>",
+        "defaultCommandPrefix": "",
+        "settingsStorage": "D:\\discomoka3\\settings.db"
     },
     "instance": {
         "id": "default"
     },
     "music": {
-        "storage": "D:/discomoka3/music",
-        "tempStorage": "D:/discomoka3/temp",
+        "storage": "D:\\discomoka3\\music",
+        "tempStorage": "D:\\discomoka3\\temp",
         "allowedExtractors": [
             "youtube", "vimeo", "soundcloud"
         ]
