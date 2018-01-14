@@ -72,5 +72,4 @@ build/
 !/config/default.json
 
 # Some more exeptions
-!/typings/discord.js-commando.d.ts
-!/typings/youtube-dl.d.ts
+!/typings/
