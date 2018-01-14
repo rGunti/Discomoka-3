@@ -30,6 +30,12 @@ class Program {
         );
         dbInstance.connect();
 
+        if (config.has('music.ffmpegPath')) {
+            let ffmpegPath:string = config.get('music.ffmpegPath');
+            Program.log(`Adding ffmpeg to PATH (OS: ${process.platform}): ${ffmpegPath}`);
+            process.env.PATH += `${process.platform === 'win32' ? ';' : ':'}${ffmpegPath}`;
+        }
+
         let bot:DiscordBot = new DiscordBot();
         bot.start(config.get('discord.token'));
     }

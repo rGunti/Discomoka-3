@@ -17,5 +17,12 @@
     },
     "instance": {
         "id": "default"
+    },
+    "music": {
+        "storage": "D:/discomoka3/music",
+        "tempStorage": "D:/discomoka3/temp",
+        "allowedExtractors": [
+            "youtube", "vimeo", "soundcloud"
+        ]
     }
 }

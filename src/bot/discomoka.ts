@@ -140,7 +140,8 @@ export class DiscordBot {
             prefix: false
         })
         .registerGroups([
-            ['debug', 'Debug Commands']
+            ['debug', 'Debug Commands'],
+            ['music', 'Music Commands']
         ]);
 
         let commandDirectory = join(__dirname, 'commands');
