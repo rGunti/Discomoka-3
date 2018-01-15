@@ -3,6 +3,9 @@ import { CreatedAt } from 'sequelize-typescript/lib/annotations/CreatedAt';
 import { UpdatedAt } from 'sequelize-typescript/lib/annotations/UpdatedAt';
 import { DeletedAt } from 'sequelize-typescript/lib/annotations/DeletedAt';
 import { Sequelize } from 'sequelize-typescript/lib/models/Sequelize';
+import { BelongsToMany } from 'sequelize-typescript/lib/annotations/association/BelongsToMany';
+import { Role } from './Role';
+import { RolePermission } from './RolePermission';
 
 @Table({
     tableName: 'permissions',
@@ -20,4 +23,7 @@ export class Permission extends Model<Permission> {
         validate: { len: [0, 255] }
     })
     description:string;
+
+    @BelongsToMany(() => Role, () => RolePermission)
+    roles:Role[];
 }

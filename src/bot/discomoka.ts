@@ -144,7 +144,8 @@ export class DiscordBot {
         })
         .registerGroups([
             ['debug', 'Debug Commands'],
-            ['music', 'Music Commands']
+            ['music', 'Music Commands'],
+            ['setup', 'Setup Commands [for Admins only]']
         ]);
 
         let commandDirectory = join(__dirname, 'commands');

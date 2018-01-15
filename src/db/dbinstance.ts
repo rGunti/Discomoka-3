@@ -5,6 +5,9 @@ import { Song } from "./model/Song";
 import * as randomstring from 'randomstring';
 import { PermissionInitializer } from "../perm/perminitializer";
 import { Permission } from './model/Permission';
+import { Role } from "./model/Role";
+import { RolePermission } from "./model/RolePermission";
+import { ServerRoleMapping } from "./model/ServerRoleMapping";
 
 export class DbInstance {
     seqInstance:Sequelize;
@@ -38,7 +41,10 @@ export class DbInstance {
         this.debugLog(`Adding models ...`);
         seq.addModels([
             Song,
-            Permission
+            Permission,
+            Role,
+            RolePermission,
+            ServerRoleMapping
         ]);
 
         this.seqInstance = seq;
