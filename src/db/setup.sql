@@ -12,6 +12,13 @@ CREATE TABLE `permissions` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+CREATE TABLE `roles` (
+  `id` varchar(18) NOT NULL,
+  `name` varchar(45) NOT NULL,
+  `description` varchar(128) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
 CREATE TABLE `role_permissions` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `role_id` varchar(18) NOT NULL,
@@ -21,13 +28,6 @@ CREATE TABLE `role_permissions` (
   KEY `fk_perm_idx` (`perm_id`),
   CONSTRAINT `fk_perm` FOREIGN KEY (`perm_id`) REFERENCES `permissions` (`id`),
   CONSTRAINT `fk_role` FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-CREATE TABLE `roles` (
-  `id` varchar(18) NOT NULL,
-  `name` varchar(45) NOT NULL,
-  `description` varchar(128) DEFAULT NULL,
-  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 CREATE TABLE `server_role_mapping` (
