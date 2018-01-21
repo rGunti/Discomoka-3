@@ -2,6 +2,7 @@ import { Permission } from './../db/model/Permission';
 import * as debug from 'debug';
 import * as async from 'async';
 import { Role } from '../db/model/Role';
+import { RolePermission } from '../db/model/RolePermission';
 
 export class PermissionInitializer {
     static log:debug.IDebugger = debug(`discomoka3:Permissions:Initializer`);
@@ -26,12 +27,44 @@ export class PermissionInitializer {
     ];
 
     static defaultRoles = [
-        [Role.KEY_GUEST,   'Guest',            'Users who are not (yet) active on the server. Usually @everyone.'],
-        [Role.KEY_MEMBER,  'Member',           'Users who are active on the server.'],
-        [Role.KEY_SUPPORT, 'Supporter',        'Users who help out Moderators perform mod tasks.'],
-        [Role.KEY_MOD,     'Moderator',        'Users who moderate the server and keep everyone save.'],
-        [Role.KEY_ADMIN,   'Administrator',    'Users who administer the server, excluding the server owner.'],
-        [Role.KEY_OWNER,   'Owner',            'User who owns the server.']
+        [Role.KEY_GUEST,   'Guest',            'Users who are not (yet) active on the server. Usually @everyone.',
+        []],
+        [Role.KEY_MEMBER,  'Member',           'Users who are active on the server.',
+        ['Commands.Allowed', 
+        'Music.SkipVote.Vote', 
+        'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
+        'MusicLib.Track.VoteRemove.Participate']],
+        [Role.KEY_SUPPORT, 'Supporter',        'Users who help out Moderators perform mod tasks.',
+        ['Commands.Allowed', 
+        'Music.Play', 'Music.Skip',
+        'Music.SkipVote.Vote', 
+        'MusicLib.Track.Download',
+        'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
+        'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate']],
+        [Role.KEY_MOD,     'Moderator',        'Users who moderate the server and keep everyone save.',
+        ['Commands.Allowed', 
+        'Music.Play', 'Music.Skip',
+        'Music.SkipVote.Start', 'Music.SkipVote.Vote', 
+        'MusicLib.Track.Download', 'MusicLib.Track.DownloadPlaylist', 'MusicLib.Track.Delete',
+        'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
+        'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
+        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete']],
+        [Role.KEY_ADMIN,   'Administrator',    'Users who administer the server, excluding the server owner.',
+        ['Commands.Allowed', 
+        'Music.Play', 'Music.Skip',
+        'Music.SkipVote.Start', 'Music.SkipVote.Vote', 
+        'MusicLib.Track.Download', 'MusicLib.Track.DownloadPlaylist', 'MusicLib.Track.Delete',
+        'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
+        'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
+        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete']],
+        [Role.KEY_OWNER,   'Owner',            'User who owns the server.',
+        ['Commands.Allowed', 
+        'Music.Play', 'Music.Skip',
+        'Music.SkipVote.Start', 'Music.SkipVote.Vote', 
+        'MusicLib.Track.Download', 'MusicLib.Track.DownloadPlaylist', 'MusicLib.Track.Delete',
+        'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
+        'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
+        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete']]
     ];
 
     static initialize() {
@@ -55,9 +88,15 @@ export class PermissionInitializer {
             });
         }, function(err:Error) {
             log(`Permissions synchronized`);
+            PermissionInitializer.initRoles();
         });
+    }
 
-        async.each(PermissionInitializer.defaultRoles, (role:string[], callback) => {
+    static initRoles(): void {
+        let log = PermissionInitializer.log;
+        log('Checking Roles...');
+
+        async.each(PermissionInitializer.defaultRoles, (role:any, callback) => {
             let roleKey = role[0],
                 roleName = role[1],
                 roleDesc = role[2];
@@ -65,13 +104,25 @@ export class PermissionInitializer {
             Role.findOrCreate({
                 where: { id: roleKey },
                 defaults: { id: roleKey, name: roleName, description: roleDesc }
-            }).spread((role:Role, created:boolean) => {
+            }).spread((roleObj:Role, created:boolean) => {
                 if (created) {
                     log(`+ Role created: ${roleKey} (${roleName})`);
+                    let rolePermissions:string[] = role[3];
+                    async.each(rolePermissions, (permission:string, roleCallback) => {
+                        RolePermission.findOrCreate({
+                            where: { roleID: roleKey, permID: permission },
+                            defaults: { roleID: roleKey, permID: permission }
+                        }).spread((rolePerm:RolePermission, created:boolean) => {
+                            log(`- Connected Role and Permission: ${roleKey} <=> ${permission}`);
+                            roleCallback();
+                        });
+                    }, (err:Error) => {
+                        callback();
+                    });
                 } else {
                     log(`- Role exists:  ${roleKey} (${roleName})`);
+                    callback();
                 }
-                callback();
             });
         }, (err:Error) => {
             log(`Roles synchronized`);
