@@ -8,6 +8,7 @@ import { Permission } from './model/Permission';
 import { Role } from "./model/Role";
 import { RolePermission } from "./model/RolePermission";
 import { ServerRoleMapping } from "./model/ServerRoleMapping";
+import { VServerRolePermission } from "./model/VServerRolePermission";
 
 export class DbInstance {
     seqInstance:Sequelize;
@@ -44,7 +45,8 @@ export class DbInstance {
             Permission,
             Role,
             RolePermission,
-            ServerRoleMapping
+            ServerRoleMapping,
+            VServerRolePermission
         ]);
 
         this.seqInstance = seq;
@@ -55,14 +57,14 @@ export class DbInstance {
         this.seqInstance.authenticate()
             .then(() => {
                 self.debugLog(`DB Connection established`);
-                Song.build({
-                    serverID: '000000000000000000',
-                    uploadedBy: '000000000000000000',
-                    title: `Test Entry ${self.instanceID}`,
-                    sourceType: 'test',
-                    sourceLink: 'mysql://localhost',
-                    source: self.instanceID
-                }).save();
+                //Song.build({
+                //    serverID: '000000000000000000',
+                //    uploadedBy: '000000000000000000',
+                //    title: `Test Entry ${self.instanceID}`,
+                //    sourceType: 'test',
+                //    sourceLink: 'mysql://localhost',
+                //    source: self.instanceID
+                //}).save();
 
                 PermissionInitializer.initialize();
             })

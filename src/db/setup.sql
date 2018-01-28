@@ -57,3 +57,17 @@ CREATE TABLE `songs` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=100037 DEFAULT CHARSET=utf8;
+
+-- =============== CREATE VIEWS ===============
+CREATE VIEW `v_permissions` AS
+SELECT
+  srm.server_id AS server_id, 
+  srm.server_role_id AS server_role_id,
+  r.id AS role_id,
+  p.id AS perm_id
+FROM
+  server_role_mapping srm 
+  LEFT JOIN roles r on srm.role_id = r.id 
+  LEFT JOIN role_permissions rp on rp.role_id = r.id 
+  LEFT JOIN permissions p on rp.perm_id = p.id
+;
