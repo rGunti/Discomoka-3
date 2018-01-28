@@ -1,3 +1,8 @@
+-- ===============================================
+-- Discomoka 3 Database Setup Script
+-- (C) 2018, Raphael "rGunti" Guntersweiler
+-- ===============================================
+
 -- =============== DROP EVERYTHING ===============
 DROP TABLE IF EXISTS `songs`;
 DROP TABLE IF EXISTS `server_role_mapping`;
