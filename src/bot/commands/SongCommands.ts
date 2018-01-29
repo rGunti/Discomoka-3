@@ -153,6 +153,14 @@ export class AddSongCommand extends Command {
                             { cwd: dirname(AddSongCommand.storageDirectory) },
                             async(err:Error, output:any) => {
                                 if (err) {
+                                    // TODO: Implement a mechanism to notify the developer (via Discord) about the issue
+                                    self.log(
+                                        `Error when downloading track.` + 
+                                        `\n Requested on server: ${msg.guild.id} ${msg.guild.name}` +
+                                        `\n Requested by user:   ${msg.member.user.id} ${msg.member.user.tag}` +
+                                        `\n Requested URL:       ${url}` +
+                                        `\n Reported Error:\n${err.name}\n${err.message}\n${err.stack}`
+                                    );
                                     autoResolveMessage(
                                         channel,
                                         MessageLevel.Error,
