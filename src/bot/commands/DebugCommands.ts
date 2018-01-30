@@ -6,6 +6,7 @@ import { RolePermission } from "../../db/model/RolePermission";
 import { Permission } from "../../db/model/Permission";
 import { Sequelize } from "sequelize-typescript/lib/models/Sequelize";
 import { VServerRolePermission } from "../../db/model/VServerRolePermission";
+import { PermissionChecker } from './../../perm/permchecker';
 
 export class OwnPermissionsCommand extends Command {
     static USER_EMPTY:string = "EMPTY";
@@ -53,49 +54,12 @@ export class OwnPermissionsCommand extends Command {
     }
 
     checkPermission(member:GuildMember, responseChannel:TextChannel):void {
-        // Get Mapping for this server
-        ServerRoleMapping.findAll({
-            where: {
-                serverID: responseChannel.guild.id
-            }
-        }).then((roles:ServerRoleMapping[]) => {
-            // Convert list to map (Discord Role ID => Mapping)
-            let mappings = new Map<string, ServerRoleMapping>();
-            for (let role of roles) {
-                mappings.set(role.serverRoleID, role);
-            }
-
-            // For each Discord role check if it has mapping
-            // If so, write it down
-            let hasRoles:string[] = [];
-            for (let i of member.roles.keyArray()) {
-                let discordRole:Role = member.roles.get(i);
-                if (mappings.has(discordRole.id)) {
-                    let mapping = mappings.get(discordRole.id);
-                    hasRoles.push(mapping.roleID);
-                }
-            }
-
-            // Resolve Permissions
-            responseChannel.sendMessage(
-                `Roles of **${member.nickname || member.displayName}**: ` + 
-                '```\n * ' + hasRoles.join('\n * ') + '\n```'
-            );
-
-            VServerRolePermission.findAll({
-                where: {
-                    serverID: member.guild.id,
-                    roleID: hasRoles
-                },
-                distinct: true,
-                attributes: ['permID']
-            }).then((value:VServerRolePermission[]) => {
-                let roleIDs:string[] = value.map(v => v.permID).filter(s => !(!s));
+        PermissionChecker.getMemberPermissions(member)
+            .then((permissions:string[]) => {
                 responseChannel.sendMessage(
-                    `Permissions of **${member.nickname || member.displayName}**\n` +
-                    '```\n - ' + roleIDs.join('\n - ') + '\n```'
+                    `Permissions of **${member.nickname || member.displayName}**:\n` +
+                    '```\n - ' + permissions.join('\n - ') + '\n```'
                 );
             });
-        });
     }
 }
