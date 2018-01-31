@@ -24,14 +24,18 @@ export abstract class BasePermissionCommand extends Command {
                         .then(resolve)
                         .catch(reject);
                 })
-                .catch((err:PermissionMissingError) => {
-                    let message = getMessage(MessageLevel.PermissionError, 
-                        'Permission missing', 
-                        "You don't have the required permission to execute this command. If you believe this is an error, " +
-                        "contact your servers administrator.\n" +
-                        `Required Permission: ${err.missingPermission}`
-                    );
-                    msg.reply(message).then(resolve).catch(reject);
+                .catch((err:PermissionMissingError|any) => {
+                    if (err instanceof PermissionMissingError) {
+                        let message = getMessage(MessageLevel.PermissionError, 
+                            'Permission missing', 
+                            "You don't have the required permission to execute this command. If you believe this is an error, " +
+                            "contact your servers administrator.\n" +
+                            `Required Permission: ${err.missingPermission}`
+                        );
+                        msg.reply(message).then(resolve).catch(reject);
+                    } else {
+                        reject(err);
+                    }
                 });
         });
     }

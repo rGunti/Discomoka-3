@@ -25,7 +25,9 @@ export class PermissionInitializer {
         ["MusicLib.Playlist.Create",                "Can create (and manage) a playlist on the servers music library"],
         ["MusicLib.Playlist.Delete",                "Can delete a playlist on the server"],
         // Other Permissions
-        ["Bot.ReportBug",                           "Can send a bug report using !bugreport command to Github"]
+        ["Bot.ReportBug",                           "Can send a bug report using !bugreport command to Github"],
+        ["Vote.Start",                              "Start a new (server-wide) vote on a given topic"],
+        ["Vote.Participate",                        "Can take part in a (server-wide) vote on a given topic"]
     ];
 
     static defaultRoles = [
