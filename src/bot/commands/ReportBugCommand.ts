@@ -38,8 +38,8 @@ export class ReportBugCommand extends BasePermissionCommand {
                 duration: 30
             }
         }, [
-            'Commands.Allowed'
-            // TODO: Add Permission for that
+            'Commands.Allowed',
+            'Bot.ReportBug'
         ]);
 
         this.githubClient = new Github();
