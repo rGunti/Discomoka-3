@@ -5,6 +5,38 @@ import * as async from "async";
 
 
 export class PermissionChecker {
+    /**
+     * Checks the permissions of a given Guild Member.
+     * If permissions is an array, all permissions have to be present to continue.
+     * If the requested permission(s) are present, the Promise will resolve, otherwise it will be rejected.
+     * @param member Member to test
+     * @param permissionID Permission ID or Permission IDs to test for
+     */
+    static async checkPermission(member:GuildMember, permissionID:string|string[]):Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+            let permissions = await PermissionChecker.getMemberPermissions(member);
+            if (permissionID instanceof Array) {
+                async.each(permissionID as string[], (i:string, callback) => {
+                    if (permissions.indexOf(i) < 0) {
+                        callback(new PermissionMissingError(member, i));
+                    }
+                }, (err:Error|any) => {
+                    if (err) {
+                        reject(err);
+                    } else {
+                        resolve();
+                    }
+                })
+            } else {
+                if (permissions.indexOf(permissionID) >= 0) {
+                    resolve();
+                } else {
+                    reject(new PermissionMissingError(member, permissionID));
+                }
+            }
+        });
+    }
+
     static async getMemberPermissions(member:GuildMember):Promise<string[]> {
         let serverID = member.guild.id;
 
@@ -67,4 +99,16 @@ export class PermissionChecker {
             }).catch(reject); // TODO: Maybe put a custom error message here
         });
     }
+}
+
+export class PermissionMissingError extends Error {
+    constructor(member:GuildMember, missingPermission:string) {
+        super(`Member ${member.id} is missing permission ${missingPermission}`);
+
+        this.member = member;
+        this.missingPermission = missingPermission;
+    }
+
+    member:GuildMember;
+    missingPermission:string;
 }
