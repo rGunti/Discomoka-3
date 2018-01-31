@@ -19,6 +19,8 @@ export class PermissionChecker {
                 async.eachSeries(permissionID as string[], (i:string, callback) => {
                     if (permissions.indexOf(i) < 0) {
                         callback(new PermissionMissingError(member, i));
+                    } else {
+                        callback();
                     }
                 }, (err:Error|any) => {
                     if (err) {

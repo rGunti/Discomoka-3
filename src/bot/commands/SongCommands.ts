@@ -10,8 +10,9 @@ import * as ytdl from "youtube-dl";
 import { getMessage, MessageLevel, autoResolveMessage } from "../../utils/discord-utils";
 import { sendMessage } from './../../utils/discord-utils';
 import { Song } from "../../db/model/Song";
+import { BasePermissionCommand } from "../basecommands/BasePermissionCommand";
 
-export class AddSongCommand extends Command {
+export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
     static storageDirectory:string;
 
@@ -37,7 +38,9 @@ export class AddSongCommand extends Command {
                 usages: 3,
                 duration: 15
             }
-        });
+        }, [
+            'MusicLib.Track.Download'
+        ]);
         this.log = debug('discomoka3:Command:AddSong');
 
         if (!AddSongCommand.allowedExtractors) {
@@ -69,7 +72,7 @@ export class AddSongCommand extends Command {
         return join(AddSongCommand.storageDirectory, extractor, itemID);
     }
 
-    public run(msg:CommandMessage, args, fromPattern:boolean):Promise<Message | Message[]> {
+    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
         let self = this;
         let { url } = args;
         let channel:TextChannel = msg.message.channel as TextChannel;
@@ -79,6 +82,7 @@ export class AddSongCommand extends Command {
             resolve:(value?:Message|PromiseLike<Message>) => void,
             reject:(reason?:any) => void
         ) => {
+            msg.channel.startTyping();
             ytdl.getInfo(url, [], null, (err:Error, info:any) => {
                 if (err) {
                     return self.sendDefaultErrorResponse(channel, resolve);
@@ -117,7 +121,7 @@ export class AddSongCommand extends Command {
                             channel,
                             MessageLevel.Info,
                             'We already know this song',
-                            `Someone already added ${existingSong.title} to the servers library. The ID is ${existingSong.id}.`,
+                            `Someone already added ${existingSong.title} to the servers library. The ID is \`${existingSong.id}\`.`,
                             resolve
                         );
                     } else {
@@ -143,10 +147,17 @@ export class AddSongCommand extends Command {
                             channel,
                             MessageLevel.Success,
                             'Download completed',
-                            `${info.title} added to the servers library, the ID is ${newSong.id}.`,
+                            `${info.title} added to the servers library, the ID is \`${newSong.id}\`.`,
                             resolve
                         );
                     } else {
+                        autoResolveMessage(
+                            channel,
+                            MessageLevel.Processing,
+                            'Processing...',
+                            'I\'m adding your song to the servers library. Please hold on a second, you will get notified when I\'m done.',
+                            (msg:Message) => {}
+                        );
                         ytdl.exec(
                             url,
                             ['-x', '--audio-format', 'mp3', '-o', `${outputPath}.TMP`],
@@ -182,7 +193,7 @@ export class AddSongCommand extends Command {
                                         channel,
                                         MessageLevel.Success,
                                         'Download completed',
-                                        `${info.title} added to the servers library, the ID is ${song.id}`,
+                                        `${info.title} added to the servers library, the ID is \`${song.id}\``,
                                         resolve
                                     );
                                 }
