@@ -3,13 +3,16 @@ import { Message } from 'discord.js';
 import { CommandMessage } from 'discord.js-commando';
 import { PermissionChecker, PermissionMissingError } from './../../perm/permchecker';
 import { getMessage, MessageLevel } from '../../utils/discord-utils';
+import * as debug from "debug";
 
 export abstract class BasePermissionCommand extends Command {
     private requiredPermissions:string[]
+    protected log:debug.IDebugger;
 
     constructor(client:CommandoClient, info:CommandInfo, requiredPermissions:string[] = []) {
         super(client, info);
         this.requiredPermissions = requiredPermissions;
+        this.log = debug(`discomoka3:Command:${info.name}`);
     }
 
     public run(msg:CommandMessage, args:string|object|string[], fromPattern:boolean):Promise<Message|Message[]> {

@@ -144,6 +144,7 @@ export class DiscordBot {
         })
         .registerGroups([
             ['debug', 'Debug Commands'],
+            ['develop', 'Developer-helping Commands'],
             ['music', 'Music Commands'],
             ['setup', 'Setup Commands [for Admins only]']
         ]);

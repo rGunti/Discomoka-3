@@ -27,5 +27,11 @@
         "allowedExtractors": [
             "youtube", "vimeo", "soundcloud"
         ]
+    },
+    "github": {
+        "personalAccessToken": "<INSERT_PERSONAL_TOKEN>",
+        "repositoryOwner": "rGunti",
+        "repositoryName": "Discomoka-3",
+        "issueTag": "bot-submit"
     }
 }

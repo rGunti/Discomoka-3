@@ -16,8 +16,6 @@ export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
     static storageDirectory:string;
 
-    log:debug.IDebugger;
-
     constructor(client:CommandoClient) {
         super(client, {
             name: 'addsong',
@@ -41,7 +39,6 @@ export class AddSongCommand extends BasePermissionCommand {
         }, [
             'MusicLib.Track.Download'
         ]);
-        this.log = debug('discomoka3:Command:AddSong');
 
         if (!AddSongCommand.allowedExtractors) {
             AddSongCommand.allowedExtractors = 
