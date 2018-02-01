@@ -37,8 +37,8 @@ export class StartVoteCommand extends BasePermissionCommand {
                 duration: 30
             }
         }, [
-            'Commands.Allowed'
-            // TODO: Add fitting permissions
+            'Commands.Allowed',
+            'Vote.Start'
         ]);
     }
 
