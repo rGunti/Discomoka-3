@@ -10,6 +10,7 @@ import * as async from "async";
 export class StartVoteCommand extends BasePermissionCommand {
     static VOTE_YES = emoji.get('thumbsup');
     static VOTE_NO = emoji.get('thumbsdown');
+    static MAX_POOL_TIME = 5 * 24 * 60 * 60; // 5 days
 
     constructor(client:CommandoClient) {
         super(client, {
@@ -48,7 +49,7 @@ export class StartVoteCommand extends BasePermissionCommand {
 
         return new Promise<Message|Message[]>((resolve, reject) => {
             msg.channel.send(
-                self.getPoolMessage(msg.member, topic, moment(), duration)
+                self.getPoolMessage(msg.member, topic, moment(), Math.min(duration, StartVoteCommand.MAX_POOL_TIME))
             ).then(async (poolMessage:Message) => {
                 let poolStarted = moment();
 
