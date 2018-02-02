@@ -126,8 +126,8 @@ export class StartVoteCommand extends BasePermissionCommand {
             .addField('Proposed by', `<@${initiator.id}>`)
             .addBlankField()
             .addField(`${emoji.get('1234')} Votes submitted: ${(votesYes + votesNo)}`, `100 %`, true)
-            .addField(`${StartVoteCommand.VOTE_YES} Yea: ${votesYes}`, `${Number.isNaN(votePercentageYes) ? '-' : Math.round(votePercentageYes / 100) * 100} %`, true)
-            .addField(`${StartVoteCommand.VOTE_NO} Nay: ${votesNo}`, `${Number.isNaN(votePercentageNo) ? '-' : Math.round(votePercentageNo / 100) * 100} %`, true)
+            .addField(`${StartVoteCommand.VOTE_YES} Yea: ${votesYes}`, `${Number.isNaN(votePercentageYes) ? '-' : Math.round(votePercentageYes)} %`, true)
+            .addField(`${StartVoteCommand.VOTE_NO} Nay: ${votesNo}`, `${Number.isNaN(votePercentageNo) ? '-' : Math.round(votePercentageNo)} %`, true)
             .addField(`${emoji.get('bar_chart')} Result of the vote`, params[0])
             .setFooter(
                 `The vote has been started at ${voteStarted.format('YYYY-MM-DD HH:mm ZZ')} and ` +
