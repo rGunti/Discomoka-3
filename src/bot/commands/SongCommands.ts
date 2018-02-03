@@ -346,6 +346,7 @@ export class DetailSongCommand extends BasePermissionCommand {
 
         return new RichEmbed()
             .setTitle(song.title)
+            .setDescription(`Song ID: \`${song.id}\``)
             .addField(':microphone: Artist / Uploader', song.artist)
             .addField(':incoming_envelope: Added by', `<@${song.uploadedBy}>`, true)
             .addField(
@@ -354,6 +355,8 @@ export class DetailSongCommand extends BasePermissionCommand {
                 true
             )
             .addField(':link: Original Source', song.sourceLink);
+        // TODO: Add a short message about how to play this song as a footer
+        //  e.g. "To play this song, enter "XYZ ${song.id}"
     }
 
     private static getMomentFromDbDate(date:Date):moment.Moment {
