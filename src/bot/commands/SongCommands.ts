@@ -11,6 +11,7 @@ import { getMessage, MessageLevel, autoResolveMessage } from "../../utils/discor
 import { sendMessage } from './../../utils/discord-utils';
 import { Song } from "../../db/model/Song";
 import { BasePermissionCommand } from "../basecommands/BasePermissionCommand";
+import { Sequelize } from 'sequelize-typescript';
 
 export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
@@ -214,5 +215,73 @@ export class AddSongCommand extends BasePermissionCommand {
             ' ~~- Rant on Twitter about how this bot sucks~~',
             callback
         );
+    }
+}
+
+export class SearchSongCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'searchsong',
+            aliases: [ 'ss', 'search' ],
+            group: 'music',
+            memberName: 'searchsong',
+            description: 'Searches for a song in the servers music library',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'term',
+                    type: 'string',
+                    label: 'Search term',
+                    prompt: 'Enter a term you want to search for in the servers library:'
+                }
+            ],
+            throttling: {
+                usages: 3,
+                duration: 15
+            }
+        }, [
+            'Commands.Allowed'
+            // Maybe add a permission that allows members to browse the library
+        ]);
+    }
+
+    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { term } = args;
+
+        return new Promise<Message|Message[]>(async (resolve, reject) => {
+            msg.channel.startTyping();
+            let songs = await Song.findAll({
+                where: {
+                    [Sequelize.Op.or]: [
+                        { title: { [Sequelize.Op.like]: `%${term}%` } },
+                        { artist: { [Sequelize.Op.like]: `%${term}%` } }
+                    ],
+                    serverID: msg.guild.id
+                },
+                order: [
+                    ['id', 'ASC']
+                ],
+                attributes: [ 'id', 'title', 'artist' ]
+            });
+            if (!songs || songs.length == 0) {
+                autoResolveMessage(
+                    msg.channel as TextChannel,
+                    MessageLevel.Info,
+                    "No results found",
+                    `Could not find any hits for "${term}"`,
+                    resolve
+                );
+            } else {
+                let searchResultString = songs
+                    .map(s => `\`${s.id}\` ${s.title} (by _${s.artist}_)`)
+                    .join('\n');
+                resolve(msg.channel.send(
+                    `**Search result for "${term}"** [_${songs.length} song(s)_]\n${searchResultString}`, {
+                    split: { char: '\n' }
+                }));
+            }
+            msg.channel.stopTyping(true);
+        });
     }
 }
