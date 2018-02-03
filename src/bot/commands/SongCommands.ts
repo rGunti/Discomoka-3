@@ -5,7 +5,7 @@ import { F_OK, ENOENT } from "constants";
 import * as fx from "mkdir-recursive";
 import * as debug from "debug";
 import { join, dirname } from "path";
-import { TextChannel, GroupDMChannel, DMChannel, Message, RichEmbed } from "discord.js";
+import { TextChannel, GroupDMChannel, DMChannel, Message, RichEmbed, VoiceChannel, VoiceConnection } from "discord.js";
 import * as ytdl from "youtube-dl";
 import { getMessage, MessageLevel, autoResolveMessage } from "../../utils/discord-utils";
 import { sendMessage } from './../../utils/discord-utils';
@@ -13,6 +13,7 @@ import { Song } from "../../db/model/Song";
 import { BasePermissionCommand } from "../basecommands/BasePermissionCommand";
 import { Sequelize } from 'sequelize-typescript';
 import * as moment from "moment";
+import { VoiceConnectionManager } from "../player/VoiceConnectionManager";
 
 export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
@@ -368,5 +369,95 @@ export class DetailSongCommand extends BasePermissionCommand {
             minute: date.getMinutes(),
             second: date.getSeconds()
         });
+    }
+}
+
+//export class PlaySongCommand extends BasePermissionCommand {
+//    constructor(client:CommandoClient) {
+//        super(client, {
+//            name: 'playsong',
+//            aliases: ['play'],
+//            group: 'music',
+//            memberName: 'playsong',
+//            description: 'Plays a given song in the voice channel the caller is sitting in.',
+//            guildOnly: true,
+//            args: [
+//                {
+//                    key: 'songID',
+//                    type: 'integer',
+//                    label: 'Song ID',
+//                    prompt: 'Enter the ID of a song to play:'
+//                }
+//            ],
+//            throttling: {
+//                usages: 2,
+//                duration: 15
+//            }
+//        }, [
+//            'Music.Play'
+//        ])
+//    }
+//
+//    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+//        let self = this;
+//        let { songID } = args;
+//    }
+//}
+
+export class JoinChannelCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'join',
+            aliases: ['join2play', 'j'],
+            group: 'music',
+            memberName: 'join',
+            description: 'Connects the bot to the voice channel the user is currently sitting in.',
+            guildOnly: true,
+            //args: [],
+            throttling: {
+                usages: 2,
+                duration: 15
+            }
+        }, [
+            'Music.Play'
+        ]);
+    }
+
+    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let voiceChannel:VoiceChannel = msg.message.member.voiceChannel;
+        if (voiceChannel) {
+            return new Promise<Message>((resolve, reject) => {
+                voiceChannel.join()
+                .then((connection:VoiceConnection) => {
+                    msg.reply(getMessage(
+                        MessageLevel.Success,
+                        "Connected",
+                        `Hi! I'm sitting in **${voiceChannel.name}** ready to play some sick tunes.`
+                    )).then((message:Message) => {
+                        resolve(message);
+                    }).catch(self.log);
+                    VoiceConnectionManager.addConnection(voiceChannel.guild.id, connection);
+                })
+                .catch((reason) => {
+                    self.log(reason);
+                    msg.reply(getMessage(
+                        MessageLevel.Error,
+                        "Could not join the voice channel",
+                        ""
+                    )).then((message:Message) => {
+                        resolve(message);
+                    }).catch(self.log);
+                });
+            });
+        } else {
+            return msg.reply(
+                getMessage(
+                    MessageLevel.Error,
+                    "Cannot join",
+                    "You are not sitting in a voice channel."
+                )
+            );
+        }
     }
 }
