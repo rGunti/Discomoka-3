@@ -5,13 +5,14 @@ import { F_OK, ENOENT } from "constants";
 import * as fx from "mkdir-recursive";
 import * as debug from "debug";
 import { join, dirname } from "path";
-import { TextChannel, GroupDMChannel, DMChannel, Message } from "discord.js";
+import { TextChannel, GroupDMChannel, DMChannel, Message, RichEmbed } from "discord.js";
 import * as ytdl from "youtube-dl";
 import { getMessage, MessageLevel, autoResolveMessage } from "../../utils/discord-utils";
 import { sendMessage } from './../../utils/discord-utils';
 import { Song } from "../../db/model/Song";
 import { BasePermissionCommand } from "../basecommands/BasePermissionCommand";
 import { Sequelize } from 'sequelize-typescript';
+import * as moment from "moment";
 
 export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
@@ -282,6 +283,87 @@ export class SearchSongCommand extends BasePermissionCommand {
                 }));
             }
             msg.channel.stopTyping(true);
+        });
+    }
+}
+
+export class DetailSongCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'detailsong',
+            aliases: [ 'song', 's', 'cat' ],
+            group: 'music',
+            memberName: 'detailsong',
+            description: 'Displays information about a given song (by ID)',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'songID',
+                    type: 'integer',
+                    label: 'Song ID',
+                    prompt: 'Enter the ID of a Song you want to display:'
+                }
+            ],
+            throttling: {
+                usages: 3,
+                duration: 15
+            }
+        }, [
+            'Commands.Allowed'
+            // Maybe add a permission that allows members to browse the library
+        ])
+    }
+
+    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { songID } = args;
+
+        return new Promise<Message>(async (resolve, reject) => {
+            msg.channel.startTyping();
+            let song = await Song.findOne({
+                where: {
+                    id: songID,
+                    serverID: msg.guild.id
+                }
+            });
+            if (song) {
+                msg.channel.send(self.constructMessageContentForSong(song));
+            } else {
+                autoResolveMessage(
+                    msg.channel as TextChannel,
+                    MessageLevel.Error,
+                    '404 Song Not Found',
+                    `Sorry, but I couldn't find a song with the ID ${songID} on this server.`,
+                    resolve
+                );
+            }
+            msg.channel.stopTyping(true);
+        });
+    }
+
+    private constructMessageContentForSong(song:Song):RichEmbed {
+        let creationDate:moment.Moment = DetailSongCommand.getMomentFromDbDate(song.createdAt);
+
+        return new RichEmbed()
+            .setTitle(song.title)
+            .addField(':microphone: Artist / Uploader', song.artist)
+            .addField(':incoming_envelope: Added by', `<@${song.uploadedBy}>`, true)
+            .addField(
+                ':clock1: Added at', 
+                `${creationDate.format('YYYY-MM-DD HH:mm:ss Z')}\n_${creationDate.fromNow()}_`,
+                true
+            )
+            .addField(':link: Original Source', song.sourceLink);
+    }
+
+    private static getMomentFromDbDate(date:Date):moment.Moment {
+        return moment.utc({
+            year: date.getFullYear(),
+            month: date.getMonth(),
+            day: date.getDate(),
+            hour: date.getHours(),
+            minute: date.getMinutes(),
+            second: date.getSeconds()
         });
     }
 }
