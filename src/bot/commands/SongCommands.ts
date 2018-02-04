@@ -538,3 +538,43 @@ export class StartPlaybackCommand extends BasePermissionCommand {
         }
     }
 }
+
+export class SkipSongCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'skip',
+            group: 'music',
+            memberName: 'skip',
+            description: 'Skips the currently playing song',
+            guildOnly: true,
+            throttling: {
+                usages: 3,
+                duration: 15
+            }
+        }, [
+            'Music.Play',
+            'Music.Skip'
+        ])
+    }
+
+    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let serverID = msg.guild.id;
+
+        let voiceChannel:VoiceChannel = msg.message.member.voiceChannel;
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (musicPlayer && 
+            voiceChannel && 
+            this.client.voiceConnections.get(msg.guild.id).channel.id == voiceChannel.id) {
+            // 1. Music Player must be active
+            // 2. User must be in the same voice channel as the bot
+            musicPlayer.skip();
+            return null;
+        } else {
+            msg.reply(getMessage(
+                MessageLevel.Warning,
+                "You must be in the same voice channel as me to do that"
+            ))
+        }
+    }
+}

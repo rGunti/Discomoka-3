@@ -10,7 +10,7 @@ export enum MessageLevel {
     Processing = ':hourglass_flowing_sand:'
 }
 
-export function getMessage(level:MessageLevel, title:string, message:string):string {
+export function getMessage(level:MessageLevel, title:string, message:string = ""):string {
     return `${level} **${title}**\n${message}`;
 }
 
