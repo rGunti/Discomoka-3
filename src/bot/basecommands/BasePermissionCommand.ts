@@ -20,9 +20,10 @@ export abstract class BasePermissionCommand extends Command {
         return new Promise<Message|Message[]>((resolve, reject) => {
             PermissionChecker.checkPermission(msg.member, self.requiredPermissions)
                 .then(() => {
-                    self.runPermitted(msg, args, fromPattern)
-                        .then(resolve)
-                        .catch(reject);
+                    let result = self.runPermitted(msg, args, fromPattern);
+                    if (result) {
+                        result.then(resolve).catch(reject);
+                    }
                 })
                 .catch((err:PermissionMissingError|any) => {
                     if (err instanceof PermissionMissingError) {
