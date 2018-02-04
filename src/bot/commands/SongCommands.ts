@@ -14,6 +14,7 @@ import { BasePermissionCommand } from "../basecommands/BasePermissionCommand";
 import { Sequelize } from 'sequelize-typescript';
 import * as moment from "moment";
 import { VoiceConnectionManager } from "../player/VoiceConnectionManager";
+import { MusicPlayer } from "../player/MusicPlayer";
 
 export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
@@ -68,7 +69,7 @@ export class AddSongCommand extends BasePermissionCommand {
         }
     }
 
-    private static getFilePath(extractor:string, itemID:string):string {
+    public static getFilePath(extractor:string, itemID:string):string {
         return join(AddSongCommand.storageDirectory, extractor, itemID);
     }
 
@@ -372,37 +373,69 @@ export class DetailSongCommand extends BasePermissionCommand {
     }
 }
 
-//export class PlaySongCommand extends BasePermissionCommand {
-//    constructor(client:CommandoClient) {
-//        super(client, {
-//            name: 'playsong',
-//            aliases: ['play'],
-//            group: 'music',
-//            memberName: 'playsong',
-//            description: 'Plays a given song in the voice channel the caller is sitting in.',
-//            guildOnly: true,
-//            args: [
-//                {
-//                    key: 'songID',
-//                    type: 'integer',
-//                    label: 'Song ID',
-//                    prompt: 'Enter the ID of a song to play:'
-//                }
-//            ],
-//            throttling: {
-//                usages: 2,
-//                duration: 15
-//            }
-//        }, [
-//            'Music.Play'
-//        ])
-//    }
-//
-//    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
-//        let self = this;
-//        let { songID } = args;
-//    }
-//}
+export class AddSongToQueueCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'queueadd',
+            aliases: ['+q'],
+            group: 'music',
+            memberName: 'queueadd',
+            description: 'Adds a given song to a queue.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'songID',
+                    type: 'integer',
+                    label: 'Song ID',
+                    prompt: 'Enter the ID of a song to play:'
+                }
+            ],
+            throttling: {
+                usages: 2,
+                duration: 15
+            }
+        }, [
+            'Music.Play'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { songID } = args;
+        let serverID:string = msg.guild.id;
+        let textChannel:TextChannel = msg.message.channel as TextChannel;
+        
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (!musicPlayer) {
+            musicPlayer = MusicPlayer.createPlayer(serverID);
+        }
+        if (!musicPlayer) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Failed to create player",
+                "Initialization failed while starting playback."
+            ));
+        }
+
+        let songs = await Song.findAll({
+            where: { id: songID, serverID: serverID }
+        });
+        if (songs.length === 1) {
+            let song = songs[0];
+            musicPlayer.addSong(song);
+            return msg.reply(getMessage(
+                MessageLevel.Success,
+                "Added song to queue", `\`${song.id}\` ${song.title} (by _${song.artist}_)`
+            ))
+        } else {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                '404 Song Not Found',
+                `Sorry, but I couldn't find a song with the ID ${songID} on this server.`
+            ));
+        }
+    }
+}
 
 export class JoinChannelCommand extends BasePermissionCommand {
     constructor(client:CommandoClient) {
@@ -458,6 +491,50 @@ export class JoinChannelCommand extends BasePermissionCommand {
                     "You are not sitting in a voice channel."
                 )
             );
+        }
+    }
+}
+
+export class StartPlaybackCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'play',
+            //aliases: [ ],
+            group: 'music',
+            memberName: 'play',
+            description: 'Starts playback',
+            guildOnly: true,
+            //args: [],
+            throttling: {
+                usages: 3,
+                duration: 15
+            }
+        }, [
+            'Music.Play',
+            'Music.Skip'
+        ]);
+    }
+
+    protected runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let serverID = msg.guild.id;
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (!musicPlayer && !VoiceConnectionManager.getConnection(serverID)) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Player is not connected", 
+                "Please let me join your voice channel so I can play you some tunes."
+            ))
+        } else if (!musicPlayer) {
+            return msg.reply(getMessage(
+                MessageLevel.Info,
+                "Empty queue", 
+                "I don't have any tracks in my queue. Please add some songs to the queue to play."
+            ))
+        } else {
+            musicPlayer.startPlay();
+            return msg.reply(getMessage(MessageLevel.Success, "Playback started", ""));
         }
     }
 }
