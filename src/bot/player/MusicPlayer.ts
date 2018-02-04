@@ -131,4 +131,10 @@ export class MusicPlayer {
     public startPlay() {
         this.takeNext();
     }
+
+    public skip() {
+        if (this.dispatcher) {
+            this.dispatcher.end('skip');
+        }
+    }
 }
