@@ -571,7 +571,7 @@ export class SkipSongCommand extends BasePermissionCommand {
             musicPlayer.skip();
             return null;
         } else {
-            msg.reply(getMessage(
+            return msg.reply(getMessage(
                 MessageLevel.Warning,
                 "You must be in the same voice channel as me to do that"
             ))
