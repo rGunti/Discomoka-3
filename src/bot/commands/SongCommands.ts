@@ -15,6 +15,7 @@ import { Sequelize } from 'sequelize-typescript';
 import * as moment from "moment";
 import { VoiceConnectionManager } from "../player/VoiceConnectionManager";
 import { MusicPlayer } from "../player/MusicPlayer";
+import { Pool, VoteOptionSummary } from "../voting/Pool";
 
 export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
@@ -576,5 +577,54 @@ export class SkipSongCommand extends BasePermissionCommand {
                 "You must be in the same voice channel as me to do that"
             ))
         }
+    }
+}
+
+export class SkipVoteCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'skipvote',
+            group: 'music',
+            memberName: 'skipvote',
+            description: 'Starts a vote to skip the currently playing song',
+            guildOnly: true,
+            throttling: {
+                usages: 3,
+                duration: 15
+            }
+        }, [
+            'Music.SkipVote.Start'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let serverID = msg.guild.id;
+
+        let voiceChannel:VoiceChannel = msg.message.member.voiceChannel;
+        let musicPlayer = MusicPlayer.getPlayer(msg.guild.id);
+        if (musicPlayer &&
+            voiceChannel &&
+            this.client.voiceConnections.get(msg.guild.id).channel.id == voiceChannel.id) {
+            let currentSong = await musicPlayer.getCurrentSong();
+            let pool = new Pool(
+                msg.member,
+                `Skip the currently playing song,\n${currentSong.title} by ${currentSong.artist}.\n` +
+                "The pool will end in 20 seconds",
+                20
+            );
+            pool.once("pool_closed", (pool:Pool, votes:VoteOptionSummary[], winners:VoteOptionSummary[]) => {
+                if (winners.length === 1 && winners[0].Option === Pool.EMOJI_VOTE_YES) {
+                    musicPlayer.skip();
+                }
+            });
+            pool.startPool(msg.channel as TextChannel);
+        } else {
+            return msg.reply(getMessage(
+                MessageLevel.Warning,
+                "You must be in the same voice channel as me to do that"
+            ))
+        }
+        return null;
     }
 }

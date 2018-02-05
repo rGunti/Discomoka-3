@@ -87,6 +87,19 @@ export class MusicPlayer {
         return this.hasConnection() && this.queue.length > 0 && !(!this.dispatcher);
     }
 
+    public get CurrentSongID():number {
+        return this.currentSongID;
+    }
+
+    public async getCurrentSong():Promise<Song> {
+        return Song.findOne({
+            where: {
+                serverID: this.serverID,
+                id: this.currentSongID
+            }
+        })
+    }
+
     public addSong(song:Song) {
         this.log(`Adding Song ${song.sourceType}/${song.source} ...`)
         this.addSongByID(song.id);
