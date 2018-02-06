@@ -49,6 +49,9 @@ export class MusicPlayer {
             } else if (reason == 'wish') {
                 instance.currentSongID = instance.userRequestedID;
                 instance.play();
+            } else if (reason == 'stop') {
+                instance.log("Playback stopped");
+                return;
             } else {
                 instance.takeNext();
             }
@@ -171,6 +174,12 @@ export class MusicPlayer {
     public skip() {
         if (this.dispatcher) {
             this.dispatcher.end('skip');
+        }
+    }
+
+    public stop() {
+        if (this.dispatcher) {
+            this.dispatcher.end('stop');
         }
     }
 }

@@ -588,6 +588,35 @@ export class CurrentSongCommand extends BasePermissionCommand {
     }
 }
 
+export class StopPlaybackCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'stopmusic',
+            aliases: ['stop'],
+            group: 'music',
+            memberName: 'stopmusic',
+            description: 'Stops the music playback.',
+            guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 15
+            }
+        }, [
+            'Music.Play'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let serverID:string = msg.guild.id;
+        let textChannel:TextChannel = msg.message.channel as TextChannel;
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (musicPlayer) { musicPlayer.stop(); }
+        return null;
+    }
+}
+
 export class JoinChannelCommand extends BasePermissionCommand {
     constructor(client:CommandoClient) {
         super(client, {
