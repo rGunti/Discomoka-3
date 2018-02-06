@@ -70,6 +70,7 @@ export class MusicPlayer {
     private dispatcher:StreamDispatcher;
     private currentSongID:number;
     private userRequestedID:number;
+    private shuffle:boolean = false;
     private log:debug.IDebugger;
 
     constructor(serverID:string) {
@@ -117,13 +118,35 @@ export class MusicPlayer {
 
     public removeSongByID(songID:number) {
         let i = this.queue.indexOf(songID);
-        if (i < 0) {
+        if (i >= 0) {
+            if (this.currentSongID == songID) {
+                // Skip to next track when removing currently playing song
+                this.takeNext();
+            }
             this.queue.splice(i, 1);
         }
     }
 
+    public hasSongInQueue(song:Song):boolean {
+        return this.hasSongByIDInQueue(song.id);
+    }
+
+    public hasSongByIDInQueue(songID:number):boolean {
+        return this.queue.indexOf(songID) >= 0;
+    }
+
+    public get Queue():number[] {
+        return this.queue;
+    }
+
+    public get ShuffleEnabled():boolean { return this.shuffle; }
+    public set ShuffleEnabled(shuffle:boolean) { this.shuffle = shuffle; }
+
     private takeNext() {
-        this.currentSongID = this.queue[MusicPlayer.generateRandomNumber(this.queue.length - 1)];
+        let newIndex = this.ShuffleEnabled ?
+            MusicPlayer.generateRandomNumber(this.queue.length - 1) : 
+            (this.queue.indexOf(this.currentSongID) + 1) % this.queue.length;
+        this.currentSongID = this.queue[newIndex];
         this.play();
     }
 

@@ -438,6 +438,109 @@ export class AddSongToQueueCommand extends BasePermissionCommand {
     }
 }
 
+export class RemoveSongFromQueueCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'queueremove',
+            aliases: ['-q'],
+            group: 'music',
+            memberName: 'queueremove',
+            description: 'Removes a given song from the queue',
+            guildOnly: true,
+            autoAliases: false,
+            args: [
+                {
+                    key: 'songID',
+                    type: 'integer',
+                    label: 'Song ID',
+                    prompt: 'Enter the ID of a song to remove from the queue:'
+                }
+            ],
+            throttling: {
+                usages: 2,
+                duration: 10
+            }
+        }, [
+            'Music.Play'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { songID } = args;
+        let serverID:string = msg.guild.id;
+        let textChannel:TextChannel = msg.message.channel as TextChannel;
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (!musicPlayer) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Sorry, but I'm not in a channel right now",
+                "Let me join your channel so I can play you some tunes."
+            ))
+        } else if (musicPlayer.hasSongByIDInQueue(songID)) {
+            musicPlayer.removeSongByID(songID);
+            return msg.reply(getMessage(
+                MessageLevel.Success,
+                "Removed song from queue"
+            ))
+        } else {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "This song is not in my queue",
+                "I'm afraid I can't let you do that then"
+            ))
+        }
+    }
+}
+
+export class ListQueueCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'listqueue',
+            aliases: ['q'],
+            group: 'music',
+            memberName: 'listqueue',
+            description: 'List the currently active queue.',
+            guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 15
+            }
+        }, [
+            'Music.Play'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let serverID:string = msg.guild.id;
+        let textChannel:TextChannel = msg.message.channel as TextChannel;
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (!musicPlayer) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Sorry, but I'm not in a channel right now",
+                "Let me join your channel so I can play you some tunes."
+            ))
+        } else {
+            let queueSongs = await Song.findAll({
+                where: {
+                    id: { [Sequelize.Op.in]: musicPlayer.Queue }
+                }
+            });
+            let searchResultString = queueSongs
+                .map((s:Song, i:number) => `\`#${i + 1}\`: \`${s.id}\` ${s.title} (by _${s.artist}_)`)
+                .join('\n');
+            return msg.channel.send(
+                `**Current Queue on "${msg.guild.name}"** [_${queueSongs.length} song(s)_]\n${searchResultString}`, {
+                    split: { char: '\n' }
+                });
+        }
+    }
+}
+
 export class JoinChannelCommand extends BasePermissionCommand {
     constructor(client:CommandoClient) {
         super(client, {
