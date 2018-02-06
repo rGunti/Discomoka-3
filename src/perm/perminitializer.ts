@@ -23,7 +23,11 @@ export class PermissionInitializer {
         ["MusicLib.Track.VoteRemove.Start",         "Can start a (server-wide) vote on removing a track to the servers music library"],
         ["MusicLib.Track.VoteRemove.Participate",   "Can participate in a (server-wide) vote on removing a track"],
         ["MusicLib.Playlist.Create",                "Can create (and manage) a playlist on the servers music library"],
-        ["MusicLib.Playlist.Delete",                "Can delete a playlist on the server"]
+        ["MusicLib.Playlist.Delete",                "Can delete a playlist on the server"],
+        // Other Permissions
+        ["Bot.ReportBug",                           "Can send a bug report using !bugreport command to Github"],
+        ["Vote.Start",                              "Start a new (server-wide) vote on a given topic"],
+        //["Vote.Participate",                        "Can take part in a (server-wide) vote on a given topic"]
     ];
 
     static defaultRoles = [
@@ -40,7 +44,8 @@ export class PermissionInitializer {
         'Music.SkipVote.Vote', 
         'MusicLib.Track.Download',
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
-        'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate']],
+        'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
+        'Vote.Start']],
         [Role.KEY_MOD,     'Moderator',        'Users who moderate the server and keep everyone save.',
         ['Commands.Allowed', 
         'Music.Play', 'Music.Skip',
@@ -48,7 +53,9 @@ export class PermissionInitializer {
         'MusicLib.Track.Download', 'MusicLib.Track.DownloadPlaylist', 'MusicLib.Track.Delete',
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
-        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete']],
+        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
+        'Bot.ReportBug',
+        'Vote.Start']],
         [Role.KEY_ADMIN,   'Administrator',    'Users who administer the server, excluding the server owner.',
         ['Commands.Allowed', 
         'Music.Play', 'Music.Skip',
@@ -56,7 +63,9 @@ export class PermissionInitializer {
         'MusicLib.Track.Download', 'MusicLib.Track.DownloadPlaylist', 'MusicLib.Track.Delete',
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
-        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete']],
+        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
+        'Bot.ReportBug',
+        'Vote.Start']],
         [Role.KEY_OWNER,   'Owner',            'User who owns the server.',
         ['Commands.Allowed', 
         'Music.Play', 'Music.Skip',
@@ -64,7 +73,9 @@ export class PermissionInitializer {
         'MusicLib.Track.Download', 'MusicLib.Track.DownloadPlaylist', 'MusicLib.Track.Delete',
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
-        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete']]
+        'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
+        'Bot.ReportBug',
+        'Vote.Start']]
     ];
 
     static initialize() {

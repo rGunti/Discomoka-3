@@ -7,6 +7,7 @@ import { RateLimitInfo } from './../utils/additionalTypings';
 import { existsSync } from 'fs';
 import * as config from 'config';
 import * as sqlite from 'sqlite';
+import { TimespanArgument } from './types';
 
 export class DiscordBot {
     protected instanceID:string;
@@ -144,8 +145,14 @@ export class DiscordBot {
         })
         .registerGroups([
             ['debug', 'Debug Commands'],
+            ['develop', 'Developer-helping Commands'],
+            ['admin', 'Admin / Mod Commands'],
             ['music', 'Music Commands'],
-            ['setup', 'Setup Commands [for Admins only]']
+            ['setup', 'Setup Commands [for Admins only]'],
+            ['voting', 'Commands for Democracy']
+        ])
+        .registerTypes([
+            TimespanArgument
         ]);
 
         let commandDirectory = join(__dirname, 'commands');
