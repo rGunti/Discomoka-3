@@ -330,7 +330,7 @@ export class DetailSongCommand extends BasePermissionCommand {
                 }
             });
             if (song) {
-                msg.channel.send(self.constructMessageContentForSong(song));
+                msg.channel.send(DetailSongCommand.constructMessageContentForSong(song));
             } else {
                 autoResolveMessage(
                     msg.channel as TextChannel,
@@ -344,7 +344,7 @@ export class DetailSongCommand extends BasePermissionCommand {
         });
     }
 
-    private constructMessageContentForSong(song:Song):RichEmbed {
+    public static constructMessageContentForSong(song:Song):RichEmbed {
         let creationDate:moment.Moment = DetailSongCommand.getMomentFromDbDate(song.createdAt);
 
         return new RichEmbed()
@@ -537,6 +537,53 @@ export class ListQueueCommand extends BasePermissionCommand {
                 `**Current Queue on "${msg.guild.name}"** [_${queueSongs.length} song(s)_]\n${searchResultString}`, {
                     split: { char: '\n' }
                 });
+        }
+    }
+}
+
+export class CurrentSongCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'currentsong',
+            aliases: ['nowplaying'],
+            group: 'music',
+            memberName: 'currentsong',
+            description: 'Shows the song that is currently playing.',
+            guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 15
+            }
+        }, [
+            'Commands.Allowed'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let serverID:string = msg.guild.id;
+        let textChannel:TextChannel = msg.message.channel as TextChannel;
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (musicPlayer && musicPlayer.CurrentSongID) {
+            let currentSong = await Song.findOne({
+                where: { id: musicPlayer.CurrentSongID }
+            });
+            if (currentSong) {
+                return msg.channel.send(DetailSongCommand.constructMessageContentForSong(currentSong));
+            } else {
+                return msg.reply(getMessage(
+                    MessageLevel.Error,
+                    "404 Song not found",
+                    "This shouldn't have happend, consider reporting this as a bug."
+                ))
+            }
+        } else if (musicPlayer.CurrentSongID) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Sorry, but I'm not in a channel right now",
+                "Let me join your channel so I can play you some tunes."
+            ))
         }
     }
 }
