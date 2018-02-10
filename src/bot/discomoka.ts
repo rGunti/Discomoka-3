@@ -56,70 +56,70 @@ export class DiscordBot {
         client.on('resumed', (replayed:number) => { self.onResume(replayed) });
 
         // -- Channels
-        client.on('channelCreate', (channel:DMChannel | GroupDMChannel | GuildChannel) => { self.onChannelCreate(channel) });
-        client.on('channelDelete', (channel:GroupDMChannel | GuildChannel) => { self.onChannelDelete(channel) });
-        client.on('channelPinsUpdate', (channel:DMChannel | GroupDMChannel | TextChannel, time:Date) => { self.onChannelPinsUpdate(channel, time) });
-        client.on('channelUpdate', (oldChannel:DMChannel | GroupDMChannel | TextChannel, newChannel:DMChannel | GroupDMChannel | TextChannel) => { self.onChannelUpdate(oldChannel, newChannel) });
+        //client.on('channelCreate', (channel:DMChannel | GroupDMChannel | GuildChannel) => { self.onChannelCreate(channel) });
+        //client.on('channelDelete', (channel:GroupDMChannel | GuildChannel) => { self.onChannelDelete(channel) });
+        //client.on('channelPinsUpdate', (channel:DMChannel | GroupDMChannel | TextChannel, time:Date) => { self.onChannelPinsUpdate(channel, time) });
+        //client.on('channelUpdate', (oldChannel:DMChannel | GroupDMChannel | TextChannel, newChannel:DMChannel | GroupDMChannel | TextChannel) => { self.onChannelUpdate(oldChannel, newChannel) });
 
         // -- Client User (Guild) Settings
-        client.on('clientUserGuildSettingsUpdate', (clientUserGuildSettings:ClientUserGuildSettings) => { self.onClientUserGuildSettingsUpdate(clientUserGuildSettings) });
-        client.on('clientUserSettingsUpdate', (clientUserSettings:ClientUserSettings) => { self.onClientUserSettingsUpdate(clientUserSettings) });
+        //client.on('clientUserGuildSettingsUpdate', (clientUserGuildSettings:ClientUserGuildSettings) => { self.onClientUserGuildSettingsUpdate(clientUserGuildSettings) });
+        //client.on('clientUserSettingsUpdate', (clientUserSettings:ClientUserSettings) => { self.onClientUserSettingsUpdate(clientUserSettings) });
 
         // -- Emojis
-        client.on('emojiCreate', (emoji:Emoji) => { self.onEmojiCreate(emoji) });
-        client.on('emojiDelete', (emoji:Emoji) => { self.onEmojiDelete(emoji) });
-        client.on('emojiUpdate', (oldEmoji:Emoji, newEmoji:Emoji) => { self.onEmojiUpdate(oldEmoji, newEmoji) });
+        //client.on('emojiCreate', (emoji:Emoji) => { self.onEmojiCreate(emoji) });
+        //client.on('emojiDelete', (emoji:Emoji) => { self.onEmojiDelete(emoji) });
+        //client.on('emojiUpdate', (oldEmoji:Emoji, newEmoji:Emoji) => { self.onEmojiUpdate(oldEmoji, newEmoji) });
         
         // -- Guilds
-        client.on('guildCreate', (guild:Guild) => { self.onGuildCreate(guild) });
-        client.on('guildDelete', (guild:Guild) => { self.onGuildDelete(guild) });
-        client.on('guildUnavailable', (guild:Guild) => { self.onGuildUnavailable(guild) });
-        client.on('guildUpdate', (oldGuild:Guild, newGuild:Guild) => { self.onGuildUpdate(oldGuild, newGuild) });
+        //client.on('guildCreate', (guild:Guild) => { self.onGuildCreate(guild) });
+        //client.on('guildDelete', (guild:Guild) => { self.onGuildDelete(guild) });
+        //client.on('guildUnavailable', (guild:Guild) => { self.onGuildUnavailable(guild) });
+        //client.on('guildUpdate', (oldGuild:Guild, newGuild:Guild) => { self.onGuildUpdate(oldGuild, newGuild) });
 
         // -- Guild Bans
-        client.on('guildBanAdd', (guild:Guild, user:User) => { self.onGuildBanAdd(guild, user) });
-        client.on('guildBanRemove', (guild:Guild, user:User) => { self.onGuildBanRemove(guild, user) });
+        //client.on('guildBanAdd', (guild:Guild, user:User) => { self.onGuildBanAdd(guild, user) });
+        //client.on('guildBanRemove', (guild:Guild, user:User) => { self.onGuildBanRemove(guild, user) });
         
         // -- Guild Members
-        client.on('guildMemberAdd', (member:GuildMember) => { self.onGuildMemberAdd(member) });
-        client.on('guildMemberAvailable', (member:GuildMember) => { self.onGuildMemberAvailable(member) });
-        client.on('guildMemberRemove', (member:GuildMember) => { self.onGuildMemberRemove(member) });
-        client.on('guildMembersChunk', (members:Collection<string, GuildMember>, guild:Guild) => { self.onGuildMembersChunk(members, guild) });
-        client.on('guildMemberSpeaking', (member:GuildMember, speaking:boolean) => { self.onGuildMemberSpeaking(member, speaking) });
-        client.on('guildMemberUpdate', (oldMember:GuildMember, newMember:GuildMember) => { self.onGuildMemberUpdate(oldMember, newMember) });
+        //client.on('guildMemberAdd', (member:GuildMember) => { self.onGuildMemberAdd(member) });
+        //client.on('guildMemberAvailable', (member:GuildMember) => { self.onGuildMemberAvailable(member) });
+        //client.on('guildMemberRemove', (member:GuildMember) => { self.onGuildMemberRemove(member) });
+        //client.on('guildMembersChunk', (members:Collection<string, GuildMember>, guild:Guild) => { self.onGuildMembersChunk(members, guild) });
+        //client.on('guildMemberSpeaking', (member:GuildMember, speaking:boolean) => { self.onGuildMemberSpeaking(member, speaking) });
+        //client.on('guildMemberUpdate', (oldMember:GuildMember, newMember:GuildMember) => { self.onGuildMemberUpdate(oldMember, newMember) });
 
         // -- Messages
-        client.on('message', (message:Message) => { self.onMessageReceived(message) });
-        client.on('messageDelete', (message:Message) => { self.onMessageDelete(message) });
-        client.on('messageDeleteBulk', (messages:Collection<Snowflake, Message>) => { self.onMessageDeleteBulk(messages) });
-        client.on('messageUpdate', (oldMessage:Message, newMessage:Message) => { self.onMessageUpdate(oldMessage, newMessage) });
+        //client.on('message', (message:Message) => { self.onMessageReceived(message) });
+        //client.on('messageDelete', (message:Message) => { self.onMessageDelete(message) });
+        //client.on('messageDeleteBulk', (messages:Collection<Snowflake, Message>) => { self.onMessageDeleteBulk(messages) });
+        //client.on('messageUpdate', (oldMessage:Message, newMessage:Message) => { self.onMessageUpdate(oldMessage, newMessage) });
 
         // -- Message Reactions
-        client.on('messageReacitonAdd', (reaction:MessageReaction, user:User) => { self.onMessageReactionAdd(reaction, user) });
-        client.on('messageReactionRemove', (reaction:MessageReaction, user:User) => { self.onMessageReactionRemove(reaction, user) });
-        client.on('messageReactionRemoveAll', (message:Message) => { self.onMessageReactionRemoveAll(message) });
+        //client.on('messageReacitonAdd', (reaction:MessageReaction, user:User) => { self.onMessageReactionAdd(reaction, user) });
+        //client.on('messageReactionRemove', (reaction:MessageReaction, user:User) => { self.onMessageReactionRemove(reaction, user) });
+        //client.on('messageReactionRemoveAll', (message:Message) => { self.onMessageReactionRemoveAll(message) });
 
         // -- Presence
-        client.on('presenceUpdate', (oldMemeber:GuildMember, newMember:GuildMember) => { self.onPresenceUpdate(oldMemeber, newMember) });
+        //client.on('presenceUpdate', (oldMemeber:GuildMember, newMember:GuildMember) => { self.onPresenceUpdate(oldMemeber, newMember) });
         
         // -- Rate Limit
         client.on('rateLimit', (rateLimit:RateLimitInfo) => { self.onRateLimit(rateLimit) });
 
         // -- Roles
-        client.on('roleCreate', (role:Role) => { self.onRoleCreate(role) });
-        client.on('roleDelete', (role:Role) => { self.onRoleDelete(role) });
-        client.on('roleUpdate', (oldRole:Role, newRole:Role) => { self.onRoleUpdate(oldRole, newRole) });
+        //client.on('roleCreate', (role:Role) => { self.onRoleCreate(role) });
+        //client.on('roleDelete', (role:Role) => { self.onRoleDelete(role) });
+        //client.on('roleUpdate', (oldRole:Role, newRole:Role) => { self.onRoleUpdate(oldRole, newRole) });
 
         // -- Typing
-        client.on('typingStart', (channel:Channel, user:User) => { self.onTypingStart(channel, user) });
-        client.on('typingStop', (channel:Channel, user:User) => { self.onTypingStop(channel, user) });
+        //client.on('typingStart', (channel:Channel, user:User) => { self.onTypingStart(channel, user) });
+        //client.on('typingStop', (channel:Channel, user:User) => { self.onTypingStop(channel, user) });
         
         // -- Users
-        client.on('userNoteUpdate', (user:User, oldNote:string, newNote:string) => { self.onUserNoteUpdate(user, oldNote, newNote) });
-        client.on('userUpdate', (oldUser:User, newUser:User) => { self.onUserUpdate(oldUser, newUser) });
+        //client.on('userNoteUpdate', (user:User, oldNote:string, newNote:string) => { self.onUserNoteUpdate(user, oldNote, newNote) });
+        //client.on('userUpdate', (oldUser:User, newUser:User) => { self.onUserUpdate(oldUser, newUser) });
     
         // -- Voice
-        client.on('voiceStateUpdate', (oldMember:GuildMember, newMember:GuildMember) => {});
+        //client.on('voiceStateUpdate', (oldMember:GuildMember, newMember:GuildMember) => {});
 
         // - Commando Events
         client.on('commandBlocked', (message:CommandMessage, reason:string) => { self.onCommandBlocked(message, reason) });
