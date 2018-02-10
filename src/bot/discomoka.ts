@@ -7,6 +7,7 @@ import { RateLimitInfo } from './../utils/additionalTypings';
 import { existsSync } from 'fs';
 import * as config from 'config';
 import * as sqlite from 'sqlite';
+import * as pjson from 'pjson';
 import { TimespanArgument } from './types';
 
 export class DiscordBot {
@@ -192,6 +193,7 @@ export class DiscordBot {
     // --- Connection ---
     protected onReady() {
         this.eventLog(`Connected and ready!`);
+        this.client.user.setGame(`Ver. ${pjson.version}`);
     }
 
     protected onDisconnect(event:CloseEvent) {

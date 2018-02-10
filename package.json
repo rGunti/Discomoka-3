@@ -1,6 +1,6 @@
 {
   "name": "discomoka3",
-  "version": "3.0.0-beta1",
+  "version": "3.0.0-beta2",
   "description": "Discomoka 3 is (yet another) rewrite of the Momoka TeamSpeak / Discord Music bot featuring a lot more new features.",
   "main": "build/main.js",
   "scripts": {
