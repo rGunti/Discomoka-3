@@ -63,3 +63,36 @@ export class OwnPermissionsCommand extends Command {
             });
     }
 }
+
+export class FillChannelCommand extends Command {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'fill',
+            group: 'debug',
+            memberName: 'fill',
+            description: 'Fills a channel with a given number of messages.',
+            guildOnly: true,
+            ownerOnly: true,
+            args: [
+                {
+                    key: 'count',
+                    type: 'integer',
+                    label: 'Number of Messages',
+                    prompt: 'Enter a number of messages to insert'
+                }
+            ],
+            throttling: { usages: 1, duration: 10 }
+        })
+    }
+
+    public async run(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { count } = args;
+        let messages:Message[] = [];
+
+        for (let i = 0; i < count; i++) {
+            await msg.channel.send(`This is message #${i + 1} / ${count}`);
+        }
+        return null;
+    }
+}
