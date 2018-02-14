@@ -70,6 +70,17 @@ export class PermissionCache {
         log("Permission cache refreshed");
     }
 
+    public async update(serverID:string) {
+        log(`Updating Data for Server ${serverID} ...`);
+
+        let permissions = await VServerRolePermission.findAll({
+            attributes: ['serverID', 'serverRoleID', 'permID'],
+            where: { serverID: serverID }
+        });
+        await this.processDbItems(permissions);
+        log(`Permission cache for Server ${serverID} updated`);
+    }
+
     public hasPermission(serverID:string, discordRoleID:string, permissionKey:string):boolean {
         if (!this.map.has(serverID)) {
             log(`Server ${serverID} is missing in cache`);
