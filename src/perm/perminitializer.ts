@@ -3,6 +3,7 @@ import * as debug from 'debug';
 import * as async from 'async';
 import { Role } from '../db/model/Role';
 import { RolePermission } from '../db/model/RolePermission';
+import { PermissionCache } from './permcache';
 
 export class PermissionInitializer {
     static log:debug.IDebugger = debug(`discomoka3:Permissions:Initializer`);
@@ -137,6 +138,7 @@ export class PermissionInitializer {
             });
         }, (err:Error) => {
             log(`Roles synchronized`);
+            PermissionCache.Instance.refresh();
         });
     }
 }
