@@ -23,7 +23,7 @@ export function autoResolveMessage(channel:TextChannel, level:MessageLevel, titl
     sendMessage(channel, level, title, message).then(callback);
 }
 
-export function codifyString(s:string) {
+export function codifyString(s:string|number|any) {
     return "`" + s + "`";
 }
 
