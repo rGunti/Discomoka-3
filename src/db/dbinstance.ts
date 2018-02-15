@@ -9,6 +9,8 @@ import { Role } from "./model/Role";
 import { RolePermission } from "./model/RolePermission";
 import { ServerRoleMapping } from "./model/ServerRoleMapping";
 import { VServerRolePermission } from "./model/VServerRolePermission";
+import { Playlist } from "./model/Playlist";
+import { PlaylistSong } from "./model/PlaylistSong";
 
 export class DbInstance {
     seqInstance:Sequelize;
@@ -46,7 +48,9 @@ export class DbInstance {
             Role,
             RolePermission,
             ServerRoleMapping,
-            VServerRolePermission
+            VServerRolePermission,
+            Playlist,
+            PlaylistSong
         ]);
 
         this.seqInstance = seq;
