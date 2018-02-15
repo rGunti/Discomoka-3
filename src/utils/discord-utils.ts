@@ -22,3 +22,11 @@ export function autoResolveMessage(channel:TextChannel, level:MessageLevel, titl
     channel.stopTyping(true);
     sendMessage(channel, level, title, message).then(callback);
 }
+
+export function codifyString(s:string) {
+    return "`" + s + "`";
+}
+
+export function codifyStringMultiline(s:string) {
+    return "```\n" + s + "\n```";
+}
