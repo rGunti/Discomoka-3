@@ -7,6 +7,7 @@ import { getMessage, MessageLevel } from "../../utils/discord-utils";
 import { codifyString } from './../../utils/discord-utils';
 import { DetailSongCommand } from "./SongCommands";
 import { Moment } from "moment";
+import { Song } from "../../db/model/Song";
 
 
 export class CreatePlaylistCommand extends BasePermissionCommand {
@@ -192,6 +193,158 @@ export class ListPlaylistCommand extends BasePermissionCommand {
                 "404 Playlist Not Found",
                 `Sorry, but I couldn't find a playlist with the ID ${codifyString(playlistID)} on this server.`
             )
+        }
+    }
+}
+
+export class AddSongToPlaylistCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'addsongtoplaylist',
+            aliases: [ '+ps' ],
+            group: 'music',
+            memberName: 'addsongtoplaylist',
+            description: 'Adds a song to a playlist.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'playlistID',
+                    type: 'integer',
+                    label: 'Playlist ID',
+                    prompt: 'Enter the ID of a playlist you want to add a song to:'
+                },
+                {
+                    key: 'songID',
+                    type: 'integer',
+                    label: 'Song ID',
+                    prompt: 'Enter the ID of a song you want to add:'
+                }
+            ]
+        }, [
+            'Commands.Allowed',
+            'MusicLib.Playlist.Create'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { playlistID, songID } = args;
+        let channel:TextChannel = msg.message.channel as TextChannel;
+        let serverID:string = msg.message.guild.id.toString();
+
+        let playlist = await Playlist.findOne({
+            where: { serverID: serverID, id: playlistID }
+        });
+        if (!playlist) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "404 Playlist Not Found",
+                `Sorry, but I couldn't find a playlist with the ID ${codifyString(playlistID)} on this server.`
+            ));
+        }
+
+        let song = await Song.findOne({
+            where: { serverID: serverID, id: songID }
+        });
+        if (!song) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "404 Song Not Found",
+                `Sorry, but I couldn't find a song with the ID ${codifyString(songID)} on this server.`
+            ));
+        }
+
+        try {
+            await playlist.addSong(song);
+            return msg.reply(getMessage(
+                MessageLevel.Success,
+                "Song added to playlist",
+                `"${song.title}" has been added to "${playlist.name}".`
+            ))
+        } catch (err) {
+            this.log(`Failed to add song to playlist on server ${serverID}:`, err);
+            await msg.react(emoji.x);
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Something went wrong when adding the song to your playlist.",
+                "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
+            ));
+        }
+    }
+}
+
+export class RemoveSongToPlaylistCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'removesongfromplaylist',
+            aliases: [ '-ps' ],
+            group: 'music',
+            memberName: 'removesongfromplaylist',
+            description: 'Removes a song from a playlist.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'playlistID',
+                    type: 'integer',
+                    label: 'Playlist ID',
+                    prompt: 'Enter the ID of a playlist you want to remove a song from:'
+                },
+                {
+                    key: 'songID',
+                    type: 'integer',
+                    label: 'Song ID',
+                    prompt: 'Enter the ID of a song you want to remove:'
+                }
+            ]
+        }, [
+            'Commands.Allowed',
+            'MusicLib.Playlist.Create'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { playlistID, songID } = args;
+        let channel:TextChannel = msg.message.channel as TextChannel;
+        let serverID:string = msg.message.guild.id.toString();
+
+        let playlist = await Playlist.findOne({
+            where: { serverID: serverID, id: playlistID }
+        });
+        if (!playlist) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "404 Playlist Not Found",
+                `Sorry, but I couldn't find a playlist with the ID ${codifyString(playlistID)} on this server.`
+            ));
+        }
+
+        let song = await Song.findOne({
+            where: { serverID: serverID, id: songID }
+        });
+        if (!song) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "404 Song Not Found",
+                `Sorry, but I couldn't find a song with the ID ${codifyString(songID)} on this server.`
+            ));
+        }
+
+        try {
+            await playlist.removeSong(song);
+            return msg.reply(getMessage(
+                MessageLevel.Success,
+                "Song removed from playlist",
+                `"${song.title}" has been removed from "${playlist.name}".`
+            ))
+        } catch (err) {
+            this.log(`Failed to remove song from playlist on server ${serverID}:`, err);
+            await msg.react(emoji.x);
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Something went wrong when removing the song from your playlist.",
+                "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
+            ));
         }
     }
 }

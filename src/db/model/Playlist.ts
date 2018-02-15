@@ -3,7 +3,20 @@ import { Song } from "./Song";
 import { PlaylistSong } from "./PlaylistSong";
 
 export declare interface Playlist {
+    addSong(song:Song);
+    addSongs(songs:Song[]);
+
+    createSong(song:Song):Promise<Song>|PromiseLike<Song>;
+
     getSongs():Promise<Song[]>|PromiseLike<Song[]>;
+
+    hasSong(song:Song):Promise<boolean>|PromiseLike<boolean>;
+    hasSongs(songs:Song[]):Promise<boolean>|PromiseLike<boolean>;
+
+    removeSong(song:Song):Promise<void>;
+    removeSongs(songs:Song[]):Promise<void>;
+
+    setSongs(songs:Song[]):Promise<Song[]>;
 }
 
 @Table({
