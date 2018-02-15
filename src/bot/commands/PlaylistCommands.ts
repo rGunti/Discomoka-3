@@ -8,6 +8,8 @@ import { codifyString } from './../../utils/discord-utils';
 import { DetailSongCommand } from "./SongCommands";
 import { Moment } from "moment";
 import { Song } from "../../db/model/Song";
+import { MusicPlayer } from "../player/MusicPlayer";
+import { VoiceConnectionManager } from "../player/VoiceConnectionManager";
 
 
 export class CreatePlaylistCommand extends BasePermissionCommand {
@@ -346,5 +348,73 @@ export class RemoveSongToPlaylistCommand extends BasePermissionCommand {
                 "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
             ));
         }
+    }
+}
+
+export class LoadPlaylistCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'loadplaylist',
+            aliases: [ '+pq' ],
+            group: 'music',
+            memberName: 'loadplaylist',
+            description: 'Loads a playlist into the queue.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'playlistID',
+                    type: 'integer',
+                    label: 'Playlist ID',
+                    prompt: 'Enter the ID of a playlist you want to load:'
+                }
+            ],
+            throttling: {
+                usages: 1,
+                duration: 10
+            }
+        }, [
+            'Commands.Allowed',
+            'Music.Play',
+            'Music.Skip'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { playlistID } = args;
+        let channel:TextChannel = msg.message.channel as TextChannel;
+        let serverID:string = msg.message.guild.id.toString();
+
+        let playlist = await Playlist.findOne({
+            where: { serverID: serverID, id: playlistID }
+        });
+        if (!playlist) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "404 Playlist Not Found",
+                `Sorry, but I couldn't find a playlist with the ID ${codifyString(playlistID)} on this server.`
+            ));
+        }
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (!musicPlayer) {
+            musicPlayer = MusicPlayer.createPlayer(serverID);
+        }
+        if (!musicPlayer) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Failed to create player",
+                "Initialization failed while starting playback."
+            ));
+        }
+        musicPlayer.clear();
+
+        let songs = await playlist.getSongs();
+        musicPlayer.addSongs(songs);
+        return msg.reply(getMessage(
+            MessageLevel.Success,
+            `Playlist "${playlist.name}" has been loaded`,
+            `${songs.length} song(s) added to queue`
+        ));
     }
 }
