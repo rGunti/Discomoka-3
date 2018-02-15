@@ -142,3 +142,56 @@ export class PlaylistCommand extends BasePermissionCommand {
         }
     }
 }
+
+export class ListPlaylistCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'listplaylist',
+            aliases: [ 'pl' ],
+            group: 'music',
+            memberName: 'listplaylist',
+            description: 'List a playlists content',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'playlistID',
+                    type: 'integer',
+                    label: 'Playlist ID',
+                    prompt: 'Enter the ID of a playlist whose content you want to display'
+                }
+            ],
+            throttling: {
+                usages: 1,
+                duration: 15
+            }
+        }, [
+            'Commands.Allowed'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { playlistID } = args;
+        let channel:TextChannel = msg.message.channel as TextChannel;
+        let serverID:string = msg.message.guild.id.toString();
+
+        return channel.send(await this.showList(msg.message.guild, playlistID));
+    }
+
+    private async showList(guild:Guild, playlistID:number):Promise<string> {
+        let playlist = await Playlist.findOne({
+            where: { serverID: guild.id, id: playlistID }
+        });
+        if (playlist) {
+            let songs = await playlist.getSongs();
+            return `**Content of Playlist "${playlist.name}"** [_${songs.length} song(s)_]\n` +
+                songs.map(s => `${codifyString(s.id)} - ${s.title} (by _${s.artist}_)`).join('\n');
+        } else {
+            return getMessage(
+                MessageLevel.Error,
+                "404 Playlist Not Found",
+                `Sorry, but I couldn't find a playlist with the ID ${codifyString(playlistID)} on this server.`
+            )
+        }
+    }
+}

@@ -2,6 +2,10 @@ import { Sequelize, Model, Column, CreatedAt, UpdatedAt, DeletedAt, Table, HasMa
 import { Song } from "./Song";
 import { PlaylistSong } from "./PlaylistSong";
 
+export declare interface Playlist {
+    getSongs():Promise<Song[]>|PromiseLike<Song[]>;
+}
+
 @Table({
     tableName: 'playlists',
     paranoid: false,
