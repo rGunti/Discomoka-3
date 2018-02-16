@@ -12,7 +12,7 @@ import { MusicPlayer } from "../player/MusicPlayer";
 import { VoiceConnectionManager } from "../player/VoiceConnectionManager";
 import { PermissionCache } from "../../perm/permcache";
 import { PlaylistSong } from "../../db/model/PlaylistSong";
-
+import * as async from "async";
 
 export class CreatePlaylistCommand extends BasePermissionCommand {
     constructor(client:CommandoClient) {
@@ -495,6 +495,73 @@ export class DeletePlaylistCommand extends BasePermissionCommand {
             return msg.reply(getMessage(
                 MessageLevel.Error,
                 "Something went wrong when deleting the playlist.",
+                "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
+            ));
+        }
+    }
+}
+
+export class SaveQueueToPlaylistCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'storequeue',
+            aliases: [ 'pqs' ],
+            group: 'music',
+            memberName: 'storequeue',
+            description: 'Saves the current queue to a new playlist with a given name.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'playlistName',
+                    type: 'string',
+                    label: 'Playlist Name',
+                    prompt: 'Enter a name of the playlist name:'
+                }
+            ],
+            throttling: {
+                usages: 1,
+                duration: 20
+            }
+        }, [
+            'Commands.Allowed',
+            'MusicLib.Playlist.Create'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { playlistName } = args;
+        let channel:TextChannel = msg.message.channel as TextChannel;
+        let serverID:string = msg.guild.id;
+        
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (!musicPlayer) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "There is no queue to save"
+            ));
+        }
+
+        let queue = musicPlayer.Queue;
+        let playlist = Playlist.build({
+            serverID: serverID,
+            createdBy: msg.author.id,
+            name: playlistName
+        });
+        try {
+            playlist = await playlist.save();
+            await playlist.addSongs(queue);
+            return msg.reply(getMessage(
+                MessageLevel.Success,
+                "Saved queue to playlist",
+                `The currently loaded queue has been saved to the playlist "${playlist.name}" with ${queue.length} song(s).`
+            ));
+        } catch (err) {
+            this.log(`Failed to save playlist from queue on server ${serverID}:`, err);
+            await msg.react(emoji.x);
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Something went wrong when creating your playlist.",
                 "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
             ));
         }

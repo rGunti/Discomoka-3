@@ -3,8 +3,8 @@ import { Song } from "./Song";
 import { PlaylistSong } from "./PlaylistSong";
 
 export declare interface Playlist {
-    addSong(song:Song);
-    addSongs(songs:Song[]);
+    addSong(song:Song|number);
+    addSongs(songs:Song[]|number[]);
 
     createSong(song:Song):Promise<Song>|PromiseLike<Song>;
 
