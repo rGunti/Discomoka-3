@@ -362,7 +362,8 @@ export class DetailSongCommand extends BasePermissionCommand {
         //  e.g. "To play this song, enter "XYZ ${song.id}"
     }
 
-    private static getMomentFromDbDate(date:Date):moment.Moment {
+    public static getMomentFromDbDate(date:Date):moment.Moment {
+        // TODO: Move to util class
         return moment.utc({
             year: date.getFullYear(),
             month: date.getMonth(),

@@ -107,14 +107,13 @@ export class PermissionCache {
 
     public hasMemberPermissions(member:GuildMember, permissions:string[]):boolean {
         let roles:string[] = member.roles.map(r => r.id);
-        let hasPermission:boolean = false;
         for (let role of roles) {
             for (let permission of permissions) {
-                if (!this.hasPermission(member.guild.id, role, permission)) {
-                    return false;
+                if (this.hasPermission(member.guild.id, role, permission)) {
+                    return true;
                 }
             }
         }
-        return true;
+        return false;
     }
 }

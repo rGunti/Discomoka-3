@@ -104,6 +104,11 @@ export class MusicPlayer {
         })
     }
 
+    public addSongs(songs:Song[]) {
+        let self = this;
+        songs.forEach(s => self.addSong(s));
+    }
+
     public addSong(song:Song) {
         this.log(`Adding Song ${song.sourceType}/${song.source} ...`)
         this.addSongByID(song.id);
@@ -113,6 +118,10 @@ export class MusicPlayer {
         if (this.queue.indexOf(songID) < 0) {
             this.queue.push(songID);
         }
+    }
+
+    public clear() {
+        this.queue = [];
     }
 
     public removeSong(song:Song) {
