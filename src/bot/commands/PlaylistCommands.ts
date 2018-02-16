@@ -10,6 +10,8 @@ import { Moment } from "moment";
 import { Song } from "../../db/model/Song";
 import { MusicPlayer } from "../player/MusicPlayer";
 import { VoiceConnectionManager } from "../player/VoiceConnectionManager";
+import { PermissionCache } from "../../perm/permcache";
+import { PlaylistSong } from "../../db/model/PlaylistSong";
 
 
 export class CreatePlaylistCommand extends BasePermissionCommand {
@@ -416,5 +418,85 @@ export class LoadPlaylistCommand extends BasePermissionCommand {
             `Playlist "${playlist.name}" has been loaded`,
             `${songs.length} song(s) added to queue`
         ));
+    }
+}
+
+export class DeletePlaylistCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'deleteplaylist',
+            aliases: [ '-p' ],
+            autoAliases: false,
+            group: 'music',
+            memberName: 'deleteplaylist',
+            description: 'Deletes a playlist from the server.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'playlistID',
+                    type: 'integer',
+                    label: 'Playlist ID',
+                    prompt: 'Enter the ID of a playlist you want to delete:'
+                }
+            ],
+            throttling: {
+                usages: 1,
+                duration: 10
+            }
+        }, [
+            'Commands.Allowed',
+            'MusicLib.Playlist.Create'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { playlistID } = args;
+        let channel:TextChannel = msg.message.channel as TextChannel;
+        let serverID:string = msg.message.guild.id.toString();
+        let authorID:string = msg.author.id.toString();
+
+        let playlist = await Playlist.findOne({
+            where: { serverID: serverID, id: playlistID }
+        });
+        if (!playlist) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "404 Playlist Not Found",
+                `Sorry, but I couldn't find a playlist with the ID ${codifyString(playlistID)} on this server.`
+            ));
+        }
+
+        if (playlist.createdBy == authorID) {
+            return this.deletePlaylist(msg, playlist);
+        } else if (PermissionCache.Instance.hasMemberPermission(msg.member, 'MusicLib.Playlist.Delete')) {
+            return this.deletePlaylist(msg, playlist);
+        } else {
+            return msg.reply(getMessage(
+                MessageLevel.PermissionError,
+                "You can't delete this playlist!",
+                "You have to be the author of the playlist to delete it or have the required permission to do so."
+            ));
+        }
+    }
+
+    private async deletePlaylist(msg:CommandMessage, playlist:Playlist):Promise<Message|Message[]> {
+        try {
+            let links = await PlaylistSong.findAll({ where: { playlistID: playlist.id } });
+            links.forEach(async (l) => await l.destroy());
+            await playlist.destroy();
+            return msg.reply(getMessage(
+                MessageLevel.Success,
+                `Playlist "${playlist.name}" deleted`
+            ));
+        } catch (err) {
+            this.log(`Failed to delete playlist on server ${msg.message.guild.id}:`, err);
+            await msg.react(emoji.x);
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Something went wrong when deleting the playlist.",
+                "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
+            ));
+        }
     }
 }
