@@ -193,7 +193,7 @@ export class DiscordBot {
     // --- Connection ---
     protected onReady() {
         this.eventLog(`Connected and ready!`);
-        this.client.user.setGame(`Ver. ${pjson.version}`);
+        this.client.user.setActivity(`Ver. ${pjson.version}`);
     }
 
     protected onDisconnect(event:CloseEvent) {
