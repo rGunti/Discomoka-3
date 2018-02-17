@@ -16,6 +16,8 @@ import * as moment from "moment";
 import { VoiceConnectionManager } from "../player/VoiceConnectionManager";
 import { MusicPlayer } from "../player/MusicPlayer";
 import { Pool, VoteOptionSummary } from "../voting/Pool";
+import { PlaylistSong } from "../../db/model/PlaylistSong";
+import { emoji } from 'node-emoji';
 
 export class AddSongCommand extends BasePermissionCommand {
     static allowedExtractors:string[];
@@ -806,5 +808,89 @@ export class SkipVoteCommand extends BasePermissionCommand {
             ))
         }
         return null;
+    }
+}
+
+export class DeleteSongCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'deletesong',
+            aliases: ['-s'],
+            autoAliases: false,
+            group: 'music',
+            memberName: 'deletesong',
+            description: 'Deletes a song from a servers library.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'songID',
+                    type: 'string',
+                    label: 'Song ID',
+                    prompt: 'Enter the ID of a Song you want to delete:'
+                }
+            ],
+            throttling: {
+                usages: 3,
+                duration: 15
+            }
+        }, [
+            'Commands.Allowed',
+            'MusicLib.Track.Delete'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { songID } = args;
+        let serverID:string = msg.guild.id;
+
+        let song = await Song.findOne({
+            where: { id: songID, serverID: serverID }
+        });
+        if (!song) {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                '404 Song Not Found',
+                `Sorry, but I couldn't find a song with the ID ${songID} on this server.`
+            ));
+        }
+
+        let playlistMembers = await PlaylistSong.findAll({
+            where: { songID: songID }
+        });
+        if (playlistMembers) {
+            try {
+                playlistMembers.forEach(l => l.destroy());
+            } catch (err) {
+                this.log(`Failed to delete song links on ${serverID}:`, err);
+                await msg.react(emoji.x);
+                return msg.reply(getMessage(
+                    MessageLevel.Error,
+                    "Something went wrong when deleting this song.",
+                    "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
+                ));
+            }
+        }
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (musicPlayer) {
+            musicPlayer.removeSong(song);
+        }
+
+        try {
+            await song.destroy();
+            return msg.reply(getMessage(
+                MessageLevel.Success,
+                `Song deleted`
+            ));
+        } catch (err) {
+            this.log(`Failed to delete song on ${serverID}:`, err);
+            await msg.react(emoji.x);
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "Something went wrong when deleting this song.",
+                "Try again in a few minutes. If this happens again, notify your server admin or file a bug report."
+            ));
+        }
     }
 }
