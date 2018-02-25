@@ -1,8 +1,10 @@
-import { Model, Table, Column } from 'sequelize-typescript';
+import { Model, Table, Column, BelongsToMany } from 'sequelize-typescript';
 import { CreatedAt } from 'sequelize-typescript/lib/annotations/CreatedAt';
 import { UpdatedAt } from 'sequelize-typescript/lib/annotations/UpdatedAt';
 import { DeletedAt } from 'sequelize-typescript/lib/annotations/DeletedAt';
 import { Sequelize } from 'sequelize-typescript/lib/models/Sequelize';
+import { Playlist } from './Playlist';
+import { PlaylistSong } from './PlaylistSong';
 
 @Table({
     tableName: 'songs',
@@ -73,4 +75,7 @@ export class Song extends Model<Song> {
     })
     @DeletedAt
     deletedAt?:Date;
+
+    @BelongsToMany(() => Playlist, () => PlaylistSong)
+    inPlaylists:Playlist[];
 }

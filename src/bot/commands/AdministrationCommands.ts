@@ -34,7 +34,7 @@ export class ClearChatCommand extends BasePermissionCommand {
             MessageLevel.Processing, `Deleting ${messages.length} messages`, "This might take a while..."
         ))) as Message;
 
-        self.deleteMessages(messages)
+        self.bulkDeleteMessages(channel, messages)
             .then((skippedMessages:number) => {
                 deleteProcessMessage.delete();
                 msg.reply(getMessage(
@@ -76,22 +76,17 @@ export class ClearChatCommand extends BasePermissionCommand {
         });
     }
 
-    private deleteMessages(messages:Message[]):Promise<number> {
-        return new Promise<number>((resolve, reject) => {
-            let skippedMessages:number = 0;
-            async.eachLimit(messages, 50, (m:Message, callback) => {
-                if (m.deletable) {
-                    m.delete()
-                        .then(m => { callback() })
-                        .catch(e => { skippedMessages += 1; callback(); });
-                } else {
-                    skippedMessages += 1;
-                    callback();
-                }
-            }, (err:Error|any) => {
-                if (err) reject(err);
-                else resolve(skippedMessages);
-            });
-        });
+    private async bulkDeleteMessages(channel:TextChannel, messages:Message[]):Promise<number> {
+        let skippedMessages = 0;
+        for (let i = 0; i < messages.length; i += 100) {
+            let chunk = messages.slice(i, i + 100);
+            try {
+                let result = await channel.bulkDelete(chunk);
+            } catch (err) {
+                this.log("An error occurred while deleting messages:", err);
+                skippedMessages += chunk.length;
+            }
+        }
+        return skippedMessages;
     }
 }

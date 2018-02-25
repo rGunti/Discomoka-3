@@ -4,6 +4,7 @@ import { getMessage, MessageLevel } from "../../utils/discord-utils";
 import * as DiscomokaRole from "../../db/model/Role"
 import * as async from "async";
 import { ServerRoleMapping } from './../../db/model/ServerRoleMapping';
+import { PermissionCache } from "../../perm/permcache";
 
 export class SetupRolesCommand extends Command {
     constructor(client:CommandoClient) {
@@ -87,6 +88,7 @@ export class SetupRolesCommand extends Command {
                 }
             });
         }, (err:Error) => {
+            PermissionCache.Instance.update(serverID);
             msg.say(getMessage(MessageLevel.Success,
                 'Setup completed',
                 'Your roles have been configured. If you want to change these settings again, rerun this command.'

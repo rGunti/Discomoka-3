@@ -4,6 +4,7 @@ import { CommandMessage } from 'discord.js-commando';
 import { PermissionChecker, PermissionMissingError } from './../../perm/permchecker';
 import { getMessage, MessageLevel } from '../../utils/discord-utils';
 import * as debug from "debug";
+import { PermissionCache } from '../../perm/permcache';
 
 export abstract class BasePermissionCommand extends Command {
     private requiredPermissions:string[]
@@ -13,6 +14,15 @@ export abstract class BasePermissionCommand extends Command {
         super(client, info);
         this.requiredPermissions = requiredPermissions;
         this.log = debug(`discomoka3:Command:${info.name}`);
+    }
+
+    public hasPermission(msg:CommandMessage):boolean {
+        if (this.requiredPermissions) {
+            let hasPerm = PermissionCache.Instance.hasMemberPermissions(msg.member, this.requiredPermissions);
+            return super.hasPermission(msg) && hasPerm;
+        } else {
+            return super.hasPermission(msg);
+        }
     }
 
     public run(msg:CommandMessage, args:string|object|string[], fromPattern:boolean):Promise<Message|Message[]> {
