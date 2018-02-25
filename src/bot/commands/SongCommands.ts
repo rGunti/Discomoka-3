@@ -678,6 +678,56 @@ export class JoinChannelCommand extends BasePermissionCommand {
     }
 }
 
+export class LeaveChannelCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'leave',
+            group: 'music',
+            memberName: 'leave',
+            description: '',
+            guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 10
+            }
+        }, [
+            'Music.Play'
+        ])
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let serverID = msg.guild.id;
+
+        let musicPlayer = MusicPlayer.getPlayer(serverID);
+        if (!musicPlayer && !VoiceConnectionManager.getConnection(serverID)) {
+            let con = this.client.voiceConnections.get(serverID);
+            if (con) {
+                con.disconnect();
+                return msg.reply(getMessage(MessageLevel.Success, "Player disconnected"));
+            } else {
+                return msg.reply(getMessage(MessageLevel.Error, "Player is not connected"));
+            }
+        }
+        musicPlayer.stop();
+        MusicPlayer.deletePlayer(serverID);
+
+        let voiceConnection = VoiceConnectionManager.getConnection(serverID);
+        if (voiceConnection) {
+            voiceConnection.disconnect();
+            return msg.reply(getMessage(MessageLevel.Success, "Player disconnected"));
+        } else {
+            let con = this.client.voiceConnections.get(serverID);
+            if (con) {
+                con.disconnect();
+                return msg.reply(getMessage(MessageLevel.Success, "Player disconnected"));
+            } else {
+                return msg.reply(getMessage(MessageLevel.Error, "Could not disconnect player"));
+            }
+        }
+    }
+}
+
 export class StartPlaybackCommand extends BasePermissionCommand {
     constructor(client:CommandoClient) {
         super(client, {
