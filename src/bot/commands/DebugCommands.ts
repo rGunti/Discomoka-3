@@ -1,5 +1,5 @@
 import { Command, CommandoClient, CommandMessage } from "discord.js-commando";
-import { Message, User, GuildMember, TextChannel, Role } from "discord.js";
+import { Message, User, GuildMember, TextChannel, Role, RichEmbed } from "discord.js";
 import { ServerRoleMapping } from "../../db/model/ServerRoleMapping";
 import * as DiscomokaRole from "../../db/model/Role";
 import { RolePermission } from "../../db/model/RolePermission";
@@ -8,6 +8,7 @@ import { Sequelize } from "sequelize-typescript/lib/models/Sequelize";
 import { VServerRolePermission } from "../../db/model/VServerRolePermission";
 import { PermissionChecker } from './../../perm/permchecker';
 import { BasePermissionCommand } from "../basecommands/BasePermissionCommand";
+import { getMessage, MessageLevel } from "../../utils/discord-utils";
 
 const pad = require("pad");
 
@@ -177,5 +178,48 @@ export class PermissionGridCommand extends BasePermissionCommand {
         //}
 
         return msg.channel.send('```\n' + `${heading}\n${message}` + '\n```');
+    }
+}
+
+export class PermissionDetailCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'perminfo',
+            group: 'debug',
+            memberName: 'perminfo',
+            description: 'Displays info about a specific permission key.',
+            guildOnly: true,
+            args: [
+                {
+                    key: 'permKey',
+                    type: 'string',
+                    label: 'Permission Key',
+                    prompt: 'Enter the Permission Key which you want to get details to:'
+                }
+            ],
+            throttling: { usages: 1, duration: 10 }
+        }, [
+            'Commands.Allowed'
+        ])
+    }
+
+    public async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let { permKey } = args;
+        let permission = await Permission.findOne({
+            where: { id: permKey }
+        });
+
+        if (permission) {
+            let reply = new RichEmbed()
+                .setTitle(permission.id)
+                .setDescription(permission.description);
+            return msg.channel.send(reply);
+        } else {
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                `404 Permission Not Found`,
+                "Permission `" + permKey + "` does not exist."
+            ));
+        }
     }
 }
