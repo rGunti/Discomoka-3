@@ -7,6 +7,9 @@ import { Permission } from "../../db/model/Permission";
 import { Sequelize } from "sequelize-typescript/lib/models/Sequelize";
 import { VServerRolePermission } from "../../db/model/VServerRolePermission";
 import { PermissionChecker } from './../../perm/permchecker';
+import { BasePermissionCommand } from "../basecommands/BasePermissionCommand";
+
+const pad = require("pad");
 
 export class OwnPermissionsCommand extends Command {
     static USER_EMPTY:string = "EMPTY";
@@ -94,5 +97,85 @@ export class FillChannelCommand extends Command {
             await msg.channel.send(`This is message #${i + 1} / ${count}`);
         }
         return null;
+    }
+}
+
+export class PermissionGridCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'permgrid',
+            group: 'debug',
+            memberName: 'permgrid',
+            description: 'Shows a permission grid for the current server.',
+            guildOnly: true,
+            throttling: { usages: 1, duration: 10 }
+        }, [
+            'Commands.Allowed'
+        ]);
+    }
+
+    public async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let serverPermissions:VServerRolePermission[] = await VServerRolePermission.findAll({
+            attributes: ['serverID', 'serverRoleID', 'roleID', 'permID'],
+            where: {
+                serverID: msg.guild.id
+            },
+            order: [
+                ['roleID', 'ASC'],
+                ['permID', 'ASC']
+            ]
+        });
+        let permissions:Permission[] = await Permission.findAll();
+        let roles:DiscomokaRole.Role[] = await DiscomokaRole.Role.findAll();
+        let roleMap = roles.reduce((map, role) => {
+            map[role.id] = role.name;
+            return map;
+        }, {});
+
+        let rolePermissionMap = permissions.reduce((map, permission) => {
+            let permRoles = serverPermissions.filter((v:VServerRolePermission, index:number, a:VServerRolePermission[]):boolean => {
+                return v.permID == permission.id;
+            });
+            map.set(permission.id, permRoles.map(v => v.roleID));
+            return map;
+        }, new Map<string, any>());
+
+        let heading = pad('Permission', 40) + ' |';
+        let line = pad('', 41, '-') + '|';
+        roles.forEach((role) => {
+            heading += `${role.name.substr(0, 3)}|`;
+            line += pad('', 3, '-') + '|';
+        });
+        heading += `\n${line}`;
+
+        let lines:string[] = [];
+
+        permissions.forEach((perm) => {
+            let line = `${pad(perm.id, 40)} |`;
+            roles.forEach((role) => {
+                if (!rolePermissionMap.has(perm.id)) {
+                    line += '   |';
+                } else {
+                    let hasPermission = !(!(rolePermissionMap.get(perm.id).find(i => i == role.id)));
+                    line += ` ${hasPermission ? 'X' : ' '} |`;
+                }
+            });
+            lines.push(line);
+        });
+
+        let message = lines.join('\n');
+        //let currentMessage = "";
+        //for (let i = 0; i < lines.length; i++) {
+        //    if (i % 10 == 0) {
+        //        if (currentMessage) {
+        //            messages.push(currentMessage);
+        //            currentMessage = "";
+        //        }
+        //        currentMessage += heading + '\n';
+        //    }
+        //    currentMessage += lines[i] + '\n';
+        //}
+
+        return msg.channel.send('```\n' + `${heading}\n${message}` + '\n```');
     }
 }
