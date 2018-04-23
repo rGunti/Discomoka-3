@@ -108,3 +108,25 @@ CREATE TABLE `playlist_songs` (
   CONSTRAINT `fk_playlist` FOREIGN KEY (`playlist_id`) REFERENCES `playlists` (`id`),
   CONSTRAINT `fk_song` FOREIGN KEY (`song_id`) REFERENCES `songs` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8;
+
+-- ============================================================================
+-- ============================== 3.0.0-beta3 =================================
+-- ============================================================================
+CREATE TABLE `score_settings` (
+  `id` varchar(18) NOT NULL,
+  `unit_name` varchar(64) NOT NULL,
+  `score_channel` varchar(18) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+CREATE TABLE `score` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `server_id` varchar(18) NOT NULL,
+  `user_id` varchar(18) NOT NULL,
+  `score` int(11),
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  CONSTRAINT `fk_server_id` FOREIGN KEY (`server_id`) REFERENCES `score_settings` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8;

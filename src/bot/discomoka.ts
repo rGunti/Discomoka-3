@@ -150,6 +150,7 @@ export class DiscordBot {
             ['admin', 'Admin / Mod Commands'],
             ['music', 'Music Commands'],
             ['setup', 'Setup Commands [for Admins only]'],
+            ['score', 'Scoring system Commands'],
             ['voting', 'Commands for Democracy']
         ])
         .registerTypes([
