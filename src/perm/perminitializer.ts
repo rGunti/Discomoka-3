@@ -25,6 +25,10 @@ export class PermissionInitializer {
         ["MusicLib.Track.VoteRemove.Participate",   "Can participate in a (server-wide) vote on removing a track"],
         ["MusicLib.Playlist.Create",                "Can create (and manage) a playlist on the servers music library"],
         ["MusicLib.Playlist.Delete",                "Can delete a playlist on the server"],
+        // Scoring System
+        ["Score.Setup",                             "Can setup the scoring system on the server"],
+        ["Score.Set",                               "Can set a users score balance to a given value"],
+        ["Score.Add",                               "Can add (or remove) a given amount from a users score balance"],
         // Other Permissions
         ["Bot.ReportBug",                           "Can send a bug report using !bugreport command to Github"],
         ["Vote.Start",                              "Start a new (server-wide) vote on a given topic"],
@@ -46,6 +50,7 @@ export class PermissionInitializer {
         'MusicLib.Track.Download',
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
+        'Score.Add',
         'Vote.Start']],
         [Role.KEY_MOD,     'Moderator',        'Users who moderate the server and keep everyone save.',
         ['Commands.Allowed', 
@@ -55,6 +60,7 @@ export class PermissionInitializer {
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
         'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
+        'Score.Set', 'Score.Add',
         'Bot.ReportBug',
         'Vote.Start']],
         [Role.KEY_ADMIN,   'Administrator',    'Users who administer the server, excluding the server owner.',
@@ -65,6 +71,7 @@ export class PermissionInitializer {
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
         'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
+        'Score.Setup', 'Score.Set', 'Score.Add',
         'Bot.ReportBug',
         'Vote.Start']],
         [Role.KEY_OWNER,   'Owner',            'User who owns the server.',
@@ -75,6 +82,7 @@ export class PermissionInitializer {
         'MusicLib.Track.VoteAdd.Start', 'MusicLib.Track.VoteAdd.Participate',
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
         'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
+        'Score.Setup', 'Score.Set', 'Score.Add',
         'Bot.ReportBug',
         'Vote.Start']]
     ];

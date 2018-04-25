@@ -684,7 +684,7 @@ export class LeaveChannelCommand extends BasePermissionCommand {
             name: 'leave',
             group: 'music',
             memberName: 'leave',
-            description: '',
+            description: 'Instruct Discomoka to leave the voice channel. Playback will be stopped and the queue will be dropped.',
             guildOnly: true,
             throttling: {
                 usages: 1,
