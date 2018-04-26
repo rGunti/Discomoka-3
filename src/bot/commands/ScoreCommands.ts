@@ -92,6 +92,13 @@ export class ScoreSetCommand extends BasePermissionCommand {
                     type: 'user',
                     label: 'User',
                     prompt: 'Enter the user for whom you want to set the score.'
+                },
+                {
+                    key: 'reason',
+                    type: 'string',
+                    label: 'Reason',
+                    prompt: 'Enter a reason for why the user receives score.',
+                    default: 'no reason'
                 }
             ],
             throttling: { usages: 1, duration: 5 }
@@ -103,7 +110,7 @@ export class ScoreSetCommand extends BasePermissionCommand {
 
     protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
         let self = this;
-        let { score, user } = args;
+        let { score, user, reason } = args;
 
         let currentScore = await ScoreSetCommand.getCurrentScore(msg.guild, msg.author);
         let scoreSettings:ScoreSettings;
@@ -121,7 +128,7 @@ export class ScoreSetCommand extends BasePermissionCommand {
         try {
             await currentScore.save();
             await (<TextChannel>msg.guild.channels.get(scoreSettings.scoreChannel)).send(
-                `${user.username}: Set to **${currentScore.score} ${scoreSettings.unitName}** by ${msg.author.username} (Balance: **${currentScore.score} ${scoreSettings.unitName}**)`
+                `<@${user.id}>: Set to **${currentScore.score} ${scoreSettings.unitName}** by <@${msg.author.id}> for ${reason} (Balance: **${currentScore.score} ${scoreSettings.unitName}**)`
             );
             return msg.channel.send(getMessage(
                 MessageLevel.Success,
@@ -173,6 +180,13 @@ export class ScoreGiveCommand extends BasePermissionCommand {
                     type: 'user',
                     label: 'User',
                     prompt: 'Enter the user for whom you want to set the score.'
+                },
+                {
+                    key: 'reason',
+                    type: 'string',
+                    label: 'Reason',
+                    prompt: 'Enter a reason for why the user receives score.',
+                    default: 'no reason'
                 }
             ],
             throttling: { usages: 1, duration: 5 }
@@ -184,7 +198,7 @@ export class ScoreGiveCommand extends BasePermissionCommand {
 
     protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
         let self = this;
-        let { score, user } = args;
+        let { score, user, reason } = args;
 
         let currentScore = await ScoreSetCommand.getCurrentScore(msg.guild, msg.author);
         let scoreSettings:ScoreSettings;
@@ -203,8 +217,8 @@ export class ScoreGiveCommand extends BasePermissionCommand {
             await currentScore.save();
             await (<TextChannel>msg.guild.channels.get(scoreSettings.scoreChannel)).send(
                 (score >= 0) ?
-                `${user.username}: **+${score} ${scoreSettings.unitName}** by ${msg.author.username} (Balance: **${currentScore.score} ${scoreSettings.unitName}**)` :
-                `${user.username}: **${score} ${scoreSettings.unitName}** by ${msg.author.username} (Balance: **${currentScore.score} ${scoreSettings.unitName}**)`
+                `<@${user.id}>: **+${score} ${scoreSettings.unitName}** by <@${msg.author.id}> for ${reason} (Balance: **${currentScore.score} ${scoreSettings.unitName}**)` :
+                `<@${user.id}>: **${score} ${scoreSettings.unitName}** by <@${msg.author.id}> for ${reason} (Balance: **${currentScore.score} ${scoreSettings.unitName}**)`
             );
             return msg.channel.send(getMessage(
                 MessageLevel.Success,
