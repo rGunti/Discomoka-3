@@ -45,7 +45,7 @@ export class RedditPostPullerSetup extends BasePermissionCommand {
             ]
         }, [
             'Commands.Allowed',
-            //'Reddit.Setup'
+            'Reddit.Setup'
         ]);
     }
 
