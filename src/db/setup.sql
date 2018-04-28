@@ -134,3 +134,16 @@ CREATE TABLE `score` (
 -- ============================================================================
 -- ============================== 3.0.0-beta4 =================================
 -- ============================================================================
+CREATE TABLE `reddit_autopost_settings` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `server_id` VARCHAR(18) NOT NULL,
+  `subreddit` VARCHAR(45) NOT NULL,
+  `target_channel` VARCHAR(18) NOT NULL,
+  `interval` INT NOT NULL DEFAULT 86400,
+  `last_post` VARCHAR(10) NULL,
+  `last_post_timestamp` TIMESTAMP NULL,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8;
