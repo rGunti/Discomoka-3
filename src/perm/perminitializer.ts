@@ -31,7 +31,7 @@ export class PermissionInitializer {
         ["Score.Add",                               "Can add (or remove) a given amount from a users score balance"],
         // Other Permissions
         ["Bot.ReportBug",                           "Can send a bug report using !bugreport command to Github"],
-        ["Vote.Start",                              "Start a new (server-wide) vote on a given topic"],
+        ["Vote.Start",                              "Start a new (server-wide) vote on a given topic"]
         //["Vote.Participate",                        "Can take part in a (server-wide) vote on a given topic"]
     ];
 
@@ -119,7 +119,8 @@ export class PermissionInitializer {
         async.each(PermissionInitializer.defaultRoles, (role:any, callback) => {
             let roleKey = role[0],
                 roleName = role[1],
-                roleDesc = role[2];
+                roleDesc = role[2],
+                rolePermissions = role[3];
             
             Role.findOrCreate({
                 where: { id: roleKey },
@@ -127,7 +128,6 @@ export class PermissionInitializer {
             }).spread((roleObj:Role, created:boolean) => {
                 if (created) {
                     log(`+ Role created: ${roleKey} (${roleName})`);
-                    let rolePermissions:string[] = role[3];
                     async.each(rolePermissions, (permission:string, roleCallback) => {
                         RolePermission.findOrCreate({
                             where: { roleID: roleKey, permID: permission },
@@ -141,7 +141,29 @@ export class PermissionInitializer {
                     });
                 } else {
                     log(`- Role exists:  ${roleKey} (${roleName})`);
-                    callback();
+                    roleObj.getPermissions()
+                        .then((rolePerms:Permission[]) => {
+                            const missingPermissions:string[] = [];
+                            async.each(rolePermissions, (permission:string, roleCallback) => {
+                                // If role does not have permission
+                                if (rolePerms.filter(p => p.id === permission).length < 1) {
+                                    missingPermissions.push(permission);
+                                }
+                                roleCallback();
+                            }, (err:Error) => {
+                                if (!err && missingPermissions.length > 0) {
+                                    roleObj.addPermissions(missingPermissions)
+                                        .then(() => {
+                                            log(`+ Added ${missingPermissions.length} missing permissions for ${roleKey} (${roleName})`);
+                                            callback();
+                                        })
+                                        .catch((err) => callback(err));
+                                } else {
+                                    callback();
+                                }
+                            });
+                        })
+                        .catch((err) => callback(err));
                 }
             });
         }, (err:Error) => {
