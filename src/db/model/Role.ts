@@ -5,6 +5,13 @@ import { RolePermission } from './RolePermission';
 import { ServerRoleMapping } from './ServerRoleMapping';
 import { HasMany } from 'sequelize-typescript/lib/annotations/association/HasMany';
 
+export declare interface Role {
+    addPermission(permission:Permission):Promise<any>;
+    addPermissions(permissions:Permission[]|string[]):Promise<any>;
+
+    getPermissions():Promise<Permission[]>;
+}
+
 @Table({
     tableName: 'roles',
     paranoid: false,

@@ -130,3 +130,7 @@ CREATE TABLE `score` (
   PRIMARY KEY (`id`),
   CONSTRAINT `fk_server_id` FOREIGN KEY (`server_id`) REFERENCES `score_settings` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8;
+
+-- ============================================================================
+-- ============================== 3.0.0-beta4 =================================
+-- ============================================================================
