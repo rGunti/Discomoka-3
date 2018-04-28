@@ -191,3 +191,40 @@ export class RedditPostPullerRemoveCommand extends BasePermissionCommand {
         }
     }
 }
+
+export class RedditPostPullerListCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'redditlist',
+            group: 'reddit',
+            memberName: 'redditlist',
+            description: 'Lists all reddit post pullers on this server.'
+        }, [
+            'Commands.Allowed',
+            'Reddit.Setup'
+        ]);
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+
+        try {
+            const existingPullers = await RedditAutoPostSettings.findAll({
+                where: {
+                    serverID: msg.guild.id
+                }
+            });
+            let message = `**Reddit Post Pullers on ${msg.guild.name}**\n`;
+            message += existingPullers
+                .map(p => `- ${codifyString(`r/${p.subreddit}`)} to <#${p.targetChannel}> every ${p.interval} seconds`)
+                .join('\n');
+            if (existingPullers.length == 0) {
+                message += "<none>";
+            }
+            return msg.channel.send(message);
+        } catch (err) {
+            console.error(err);
+            return msg.reply(RedditPostPullerSetupCommand.internalError);
+        }
+    }
+}
