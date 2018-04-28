@@ -6,15 +6,15 @@ import * as config from 'config';
 import { RedditAutoPostSettings } from './../../db/model/Reddit';
 import { subredditExists } from "../reddit/utils";
 
-export class RedditPostPullerSetup extends BasePermissionCommand {
+export class RedditPostPullerSetupCommand extends BasePermissionCommand {
     static limitSettings = {
         minInterval: <number>config.get('reddit.serverLimits.minInterval'),
         maxItems: <number>config.get('reddit.serverLimits.maxItems')
     };
 
-    static internalError = getMessage(
+    public static internalError = getMessage(
         MessageLevel.Error, "Internal Error", "Whoops! Something went wrong here... Please try again later, okay? ô_ô"
-    )
+    );
 
     constructor(client:CommandoClient) {
         super(client, {
@@ -52,13 +52,14 @@ export class RedditPostPullerSetup extends BasePermissionCommand {
     protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
         let self = this;
         let { subreddit, targetChannel, interval } = args;
+        subreddit = subreddit.toLowerCase();
 
         // Check if input is valid
-        if (interval < RedditPostPullerSetup.limitSettings.minInterval) {
+        if (interval < RedditPostPullerSetupCommand.limitSettings.minInterval) {
             return msg.reply(getMessage(
                 MessageLevel.Error,
                 "Interval too short",
-                `Your entered interval of ${interval} seconds is too short. Minimum is ${RedditPostPullerSetup.limitSettings.minInterval} seconds.`
+                `Your entered interval of ${interval} seconds is too short. Minimum is ${RedditPostPullerSetupCommand.limitSettings.minInterval} seconds.`
             ));
         }
 
@@ -67,11 +68,11 @@ export class RedditPostPullerSetup extends BasePermissionCommand {
             const usedSlots = await RedditAutoPostSettings.count({
                 where: { serverID: msg.guild.id }
             });
-            if (usedSlots >= RedditPostPullerSetup.limitSettings.maxItems) {
+            if (usedSlots >= RedditPostPullerSetupCommand.limitSettings.maxItems) {
                 return msg.reply(getMessage(
                     MessageLevel.Error,
                     "No slots left",
-                    `Sorry, but you can't add another post puller to your server because you have used ${usedSlots} of the available ${RedditPostPullerSetup.limitSettings.maxItems} slots.\n` + 
+                    `Sorry, but you can't add another post puller to your server because you have used ${usedSlots} of the available ${RedditPostPullerSetupCommand.limitSettings.maxItems} slots.\n` + 
                     `Consider deleting a post puller.`
                 ));
             } else if (usedSlots > 0) {
@@ -96,17 +97,17 @@ export class RedditPostPullerSetup extends BasePermissionCommand {
             }
         } catch (err) {
             console.error(err);
-            return msg.reply(RedditPostPullerSetup.internalError);
+            return msg.reply(RedditPostPullerSetupCommand.internalError);
         }
 
         // Check if subreddit exists
         try {
             if (!(await subredditExists(subreddit))) {
-                return msg.reply(RedditPostPullerSetup.getMissingSubredditMessage(subreddit));
+                return msg.reply(RedditPostPullerSetupCommand.getMissingSubredditMessage(subreddit));
             }
         } catch (err) {
             console.error(err);
-            return msg.reply(RedditPostPullerSetup.getMissingSubredditMessage(subreddit));
+            return msg.reply(RedditPostPullerSetupCommand.getMissingSubredditMessage(subreddit));
         }
 
         // Add puller
@@ -125,7 +126,7 @@ export class RedditPostPullerSetup extends BasePermissionCommand {
             ));
         } catch (err) {
             console.error(err);
-            return msg.reply(RedditPostPullerSetup.internalError);
+            return msg.reply(RedditPostPullerSetupCommand.internalError);
         }
     }
 
@@ -135,5 +136,58 @@ export class RedditPostPullerSetup extends BasePermissionCommand {
             'Subreddit does not exist',
             `Sorry, but I couldn't find ${codifyString(`r/${subreddit}`)}. Does it even exist or is it just empty?`
         );
+    }
+}
+
+export class RedditPostPullerRemoveCommand extends BasePermissionCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'redditremove',
+            group: 'reddit',
+            memberName: 'redditremove',
+            description: 'Removes a reddit post puller from your server.',
+            args: [
+                {
+                    key: 'subreddit',
+                    type: 'string',
+                    label: 'Subreddit',
+                    prompt: 'Enter the name of the subreddit you want to get posts from:'
+                }
+            ]
+        }, [
+            'Commands.Allowed',
+            'Reddit.Setup'
+        ]);
+    }
+
+    protected async runPermitted(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { subreddit } = args;
+        subreddit = subreddit.toLowerCase();
+
+        try {
+            const existingPuller = await RedditAutoPostSettings.findOne({
+                where: {
+                    subreddit: subreddit,
+                    serverID: msg.guild.id
+                }
+            });
+            if (existingPuller) {
+                await existingPuller.destroy();
+                return msg.reply(getMessage(
+                    MessageLevel.Success,
+                    `Deleted post puller for r/${subreddit}`
+                ));
+            } else {
+                return msg.reply(getMessage(
+                    MessageLevel.Warning,
+                    `You don't have a post puller setup for r/${subreddit}`,
+                    "No action was taken"
+                ));
+            }
+        } catch (err) {
+            console.error(err);
+            return msg.reply(RedditPostPullerSetupCommand.internalError);
+        }
     }
 }
