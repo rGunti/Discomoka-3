@@ -142,7 +142,7 @@ CREATE TABLE `reddit_autopost_settings` (
   `interval` INT NOT NULL DEFAULT 86400,
   `last_post` VARCHAR(10) NULL,
   `last_post_timestamp` TIMESTAMP NULL,
-  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
