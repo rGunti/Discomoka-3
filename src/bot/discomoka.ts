@@ -149,6 +149,7 @@ export class DiscordBot {
             ['develop', 'Developer-helping Commands'],
             ['admin', 'Admin / Mod Commands'],
             ['music', 'Music Commands'],
+            ['reddit', 'Reddit Post Puller Commands'],
             ['setup', 'Setup Commands [for Admins only]'],
             ['score', 'Scoring system Commands'],
             ['voting', 'Commands for Democracy']
