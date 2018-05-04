@@ -17,6 +17,7 @@ export class RedditFetcherStock {
     public static async initialize(client:CommandoClient) {
         RedditFetcherStock.debugLog('Initializing RedditFetchStock...');
         RedditFetcherStock.instance = new RedditFetcher().start();
+        RedditFetcherStock.client = client;
         RedditFetcherStock.debugLog(`Initialization completed`);
     }
 }
@@ -130,9 +131,12 @@ export class RedditFetcher {
 
         // Create Message
         let message = new RichEmbed()
-            .setTitle(`New post on r/${redditPost.subreddit}`)
-            .setURL(redditPost.url || `https://reddit.com${redditPost.permalink}`)
-            .setDescription(redditPost.url);
+            .setTitle(`r/${redditPost.subreddit}: ${redditPost.title}`)
+            .setURL(`https://reddit.com${redditPost.permalink}`)
+            .setDescription(`:link: ${redditPost.url}`);
+        if (redditPost.url) {
+            message.setImage(redditPost.url);
+        }
 
         // Send Message
         await (<TextChannel>channel).send(message);
