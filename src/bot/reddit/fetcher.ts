@@ -75,9 +75,10 @@ export class RedditFetcher {
             let subreddits = await this.fetchPending();
             this.debugLog(`Found ${subreddits.length} pending subreddit(s) to update`);
 
-            subreddits.forEach((r) => {
+            for (let r of subreddits) {
                 self.debugLog(`- ${r.subreddit} (Last updated: ${r.lastPostTimestamp}, ${r.lastPost})`);
-            });
+                
+            } 
         } catch (err) {
             this.errorLog(`Error while fetching Reddit feeds`);
             console.error(err);
