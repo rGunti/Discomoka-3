@@ -30,7 +30,7 @@ export class RedditAutoPostSettings extends Model<RedditAutoPostSettings> {
     lastPost:string;
 
     @Column({ field: 'last_post_timestamp' })
-    lastPostTimestamp:Date;
+    nextCheckDue:Date;
 
     @Column({ field: 'created_at' })
     @CreatedAt

@@ -66,7 +66,7 @@ export class RedditFetcher {
             this.debugLog(`Found ${subreddits.length} pending subreddit(s) to update`);
 
             for (let r of subreddits) {
-                self.debugLog(`- Server ${r.serverID}: ${r.subreddit} (Last updated: ${r.lastPostTimestamp}, ${r.lastPost})`);
+                self.debugLog(`- Server ${r.serverID}: ${r.subreddit} (Last updated: ${r.nextCheckDue}, ${r.lastPost})`);
                 try {
                     let subredditListing = await fetchSubreddit(r.subreddit);
                     let filteredList = subredditListing.data.children.filter(i => i.data.stickied == false);
@@ -97,7 +97,7 @@ export class RedditFetcher {
         return RedditAutoPostSettings.findAll({
             where: {
                 //serverID: this.serverID,
-                lastPostTimestamp: {
+                nextCheckDue: {
                     [Op.or]: {
                         [Op.eq]: null,
                         [Op.lte]: new Date()
@@ -144,7 +144,7 @@ export class RedditFetcher {
 
     private async saveUpdatedTransaction(settings:RedditAutoPostSettings, postID:string = null) {
         settings.lastPost = postID || settings.lastPost;
-        settings.lastPostTimestamp = new Date(new Date().getTime() + settings.interval * 60000);
+        settings.nextCheckDue = new Date(new Date().getTime() + settings.interval * 60000);
         await settings.save();
     }
 }
