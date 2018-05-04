@@ -11,42 +11,19 @@ import { fetchSubreddit, RedditPost } from './utils';
 export class RedditFetcherStock {
     private static debugLog = debug(`discomoka3:RedditFetcherStock:Debug`);
     private static errorLog = debug(`discomoka3:RedditFetcherStock:Error`);
-    private static servers:Map<string, RedditFetcher>;
-
+    private static instance:RedditFetcher;
     public static client:CommandoClient;
 
     public static async initialize(client:CommandoClient) {
         RedditFetcherStock.debugLog('Initializing RedditFetchStock...');
-
-        let servers = new Map<string, RedditFetcher>();
-        RedditFetcherStock.client = client;
-
-        async.forEachLimit(client.guilds.map(g => g.id), 15, async (serverID:string, callback) => {
-            try {
-                const fetchers:number = await RedditAutoPostSettings.count({
-                    where: { serverID: serverID }
-                });
-                if (fetchers > 0) {
-                    servers.set(serverID, new RedditFetcher(serverID).start());
-                }
-                callback();
-            } catch (err) {
-                callback(err);
-            }
-        }, (err) => {
-            if (err) {
-                RedditFetcherStock.errorLog(`Error while initializing RedditFetcherStock!`);
-                console.error(err);
-            } else {
-                RedditFetcherStock.debugLog(`Initialization completed`);
-            }
-            RedditFetcherStock.servers = servers;
-        });
+        RedditFetcherStock.instance = new RedditFetcher().start();
+        RedditFetcherStock.debugLog(`Initialization completed`);
     }
 }
 
 export class RedditFetcher {
-    private serverID:string;
+    private instanceID:string;
+    //private serverID:string;
     private debugLog:debug.IDebugger;
     private errorLog:debug.IDebugger;
     private interval:number;
@@ -55,21 +32,29 @@ export class RedditFetcher {
     
     private handler:NodeJS.Timer;
 
-    constructor(serverID:string) {
-        this.debugLog = debug(`discomoka3:RedditFetcher ${serverID}:Debug`);
-        this.errorLog = debug(`discomoka3:RedditFetcher ${serverID}:Error`);
+    constructor() {
+        this.instanceID = randomstring.generate(8);
+        this.debugLog = debug(`discomoka3:RedditFetcher ${this.instanceID}:Debug`);
+        this.errorLog = debug(`discomoka3:RedditFetcher ${this.instanceID}:Error`);
         this.interval = config.get('reddit.poller.interval');
         this.minFetchInterval = config.get('reddit.serverLimits.minInterval');
         this.doNotSave = config.has('reddit.poller.donotsave') ? config.get('reddit.poller.donotsave') : false;
-        this.serverID = serverID;
+        //this.serverID = serverID;
 
-        this.debugLog(`Setup Fetcher for Server ${serverID}`);
+        this.debugLog(`Setup Fetcher`);
     }
 
     public start() {
+        if (this.handler) return;
         let self = this;
         this.handler = setInterval(() => { self.loop(); }, this.interval * 1000);
         return self;
+    }
+
+    public stop() {
+        if (!this.handler) return;
+        this.debugLog('Stopping Fetcher...');
+        clearInterval(this.handler);
     }
 
     private async loop() {
@@ -81,7 +66,7 @@ export class RedditFetcher {
             this.debugLog(`Found ${subreddits.length} pending subreddit(s) to update`);
 
             for (let r of subreddits) {
-                self.debugLog(`- ${r.subreddit} (Last updated: ${r.lastPostTimestamp}, ${r.lastPost})`);
+                self.debugLog(`- Server ${r.serverID}: ${r.subreddit} (Last updated: ${r.lastPostTimestamp}, ${r.lastPost})`);
                 try {
                     let subredditListing = await fetchSubreddit(r.subreddit);
                     let filteredList = subredditListing.data.children.filter(i => i.data.stickied == false);
@@ -111,7 +96,7 @@ export class RedditFetcher {
     private async fetchPending():Promise<RedditAutoPostSettings[]> {
         return RedditAutoPostSettings.findAll({
             where: {
-                serverID: this.serverID,
+                //serverID: this.serverID,
                 lastPostTimestamp: {
                     [Op.or]: {
                         [Op.eq]: null,
@@ -126,20 +111,20 @@ export class RedditFetcher {
         const client = RedditFetcherStock.client;
 
         // Validation
-        const server = client.guilds.get(this.serverID);
+        const server = client.guilds.get(settings.serverID);
         if (!server) {
-            this.errorLog(`Could not post to server ${this.serverID} because the server could not be found.`);
+            this.errorLog(`Could not post to server ${settings.serverID} because the server could not be found.`);
             return;
         }
 
         const channel = server.channels.get(settings.targetChannel);
         if (!channel) {
-            this.errorLog(`Could not post to channel ${this.serverID}/${settings.targetChannel} because the channel could not be found.`);
+            this.errorLog(`Could not post to channel ${settings.serverID}/${settings.targetChannel} because the channel could not be found.`);
             return;
         }
 
         if (channel.type != 'text') {
-            this.errorLog(`Could not post to channel ${this.serverID}/${settings.targetChannel} because it is not a text channel (got: ${channel.type}).`);
+            this.errorLog(`Could not post to channel ${settings.serverID}/${settings.targetChannel} because it is not a text channel (got: ${channel.type}).`);
             return;
         }
 
