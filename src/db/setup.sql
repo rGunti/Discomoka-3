@@ -4,6 +4,11 @@
 -- ===============================================
 
 -- =============== DROP EVERYTHING ===============
+-- --- 3.0.0-beta4 ---
+DROP TABLE IF EXISTS `reddit_autopost_settings`;
+-- --- 3.0.0-beta3 ---
+DROP TABLE IF EXISTS `score`;
+DROP TABLE IF EXISTS `score_settings`;
 -- --- 3.0.0-beta2 ---
 DROP TABLE IF EXISTS `playlist_songs`;
 DROP TABLE IF EXISTS `playlists`;
@@ -147,3 +152,31 @@ CREATE TABLE `reddit_autopost_settings` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=100000 DEFAULT CHARSET=utf8;
+
+-- Migrating everything from TIMESTAMP to DATETIME because Sequelize doesn't really like TIMESTAMPs
+--- <MIGRATION>
+ALTER TABLE `server_role_mapping` 
+CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CHANGE COLUMN `updated_at` `updated_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00';
+
+ALTER TABLE `songs` 
+CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CHANGE COLUMN `updated_at` `updated_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
+
+ALTER TABLE `playlists` 
+CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CHANGE COLUMN `updated_at` `updated_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
+
+ALTER TABLE `score` 
+CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CHANGE COLUMN `updated_at` `updated_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
+
+ALTER TABLE `reddit_autopost_settings` 
+CHANGE COLUMN `last_post_timestamp` `last_post_timestamp` DATETIME NULL,
+CHANGE COLUMN `created_at` `created_at` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+CHANGE COLUMN `updated_at` `updated_at` DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00',
+CHANGE COLUMN `deleted_at` `deleted_at` DATETIME NULL DEFAULT NULL;
+--- </MIGRATION>
