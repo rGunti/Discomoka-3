@@ -33,5 +33,14 @@
         "repositoryOwner": "rGunti",
         "repositoryName": "Discomoka-3",
         "issueTag": "bot-submit"
+    },
+    "reddit": {
+        "serverLimits": {
+            "minInterval": 3600,
+            "maxItems": 3
+        },
+        "poller": {
+            "interval": 120
+        }
     }
 }

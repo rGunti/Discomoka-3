@@ -29,6 +29,8 @@ export class PermissionInitializer {
         ["Score.Setup",                             "Can setup the scoring system on the server"],
         ["Score.Set",                               "Can set a users score balance to a given value"],
         ["Score.Add",                               "Can add (or remove) a given amount from a users score balance"],
+        // Reddit
+        ["Reddit.Setup",                            "Can setup Reddit post puller on the server"],
         // Other Permissions
         ["Bot.ReportBug",                           "Can send a bug report using !bugreport command to Github"],
         ["Vote.Start",                              "Start a new (server-wide) vote on a given topic"]
@@ -72,6 +74,7 @@ export class PermissionInitializer {
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
         'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
         'Score.Setup', 'Score.Set', 'Score.Add',
+        'Reddit.Setup',
         'Bot.ReportBug',
         'Vote.Start']],
         [Role.KEY_OWNER,   'Owner',            'User who owns the server.',
@@ -83,6 +86,7 @@ export class PermissionInitializer {
         'MusicLib.Track.VoteRemove.Start', 'MusicLib.Track.VoteRemove.Participate',
         'MusicLib.Playlist.Create', 'MusicLib.Playlist.Delete',
         'Score.Setup', 'Score.Set', 'Score.Add',
+        'Reddit.Setup',
         'Bot.ReportBug',
         'Vote.Start']]
     ];
