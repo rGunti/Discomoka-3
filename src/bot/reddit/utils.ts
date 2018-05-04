@@ -13,7 +13,7 @@ export interface SubredditListings {
 }
 export interface RedditThing {
     kind:RedditThing;
-    data:RedditPost|any;
+    data:RedditPost;
 }
 
 export interface RedditPost {
