@@ -9,6 +9,7 @@ import * as config from 'config';
 import * as sqlite from 'sqlite';
 import * as pjson from 'pjson';
 import { TimespanArgument, DateTimeArgument } from './types';
+import { RedditFetcherStock } from './reddit/fetcher';
 
 export class DiscordBot {
     protected instanceID:string;
@@ -150,6 +151,7 @@ export class DiscordBot {
             ['admin', 'Admin / Mod Commands'],
             ['music', 'Music Commands'],
             ['owner', 'Commands for the MASTER'],
+            ['reddit', 'Reddit Post Puller Commands'],
             ['setup', 'Setup Commands [for Admins only]'],
             ['score', 'Scoring system Commands'],
             ['voting', 'Commands for Democracy']
@@ -198,6 +200,8 @@ export class DiscordBot {
     protected onReady() {
         this.eventLog(`Connected and ready!`);
         this.client.user.setActivity(`Ver. ${pjson.version}`);
+
+        RedditFetcherStock.initialize(this.client);
     }
 
     protected onDisconnect(event:CloseEvent) {

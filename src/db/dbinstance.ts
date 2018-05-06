@@ -12,6 +12,7 @@ import { VServerRolePermission } from "./model/VServerRolePermission";
 import { Playlist } from "./model/Playlist";
 import { PlaylistSong } from "./model/PlaylistSong";
 import { Score, ScoreSettings } from "./model/Score";
+import { RedditAutoPostSettings } from "./model/Reddit";
 
 export class DbInstance {
     seqInstance:Sequelize;
@@ -53,7 +54,8 @@ export class DbInstance {
             Playlist,
             PlaylistSong,
             ScoreSettings,
-            Score
+            Score,
+            RedditAutoPostSettings
         ]);
 
         this.seqInstance = seq;
