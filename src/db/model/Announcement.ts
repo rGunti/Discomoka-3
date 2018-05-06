@@ -21,6 +21,9 @@ export class Announcement extends Model<Announcement> {
     @Column({ field: 'post_by' })
     postBy:Date;
 
+    @Column({ field: 'posted_by' })
+    postedBy:Date;
+
     @Column({ field: 'created_at' })
     @CreatedAt
     createdAt:Date;

@@ -103,3 +103,50 @@ export class ListAnnouncementsCommand extends OwnerCommand {
         }
     }
 }
+
+export class DeleteAnnouncement extends OwnerCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'announcedelete',
+            group: 'owner',
+            memberName: 'announcedelete',
+            description: 'Deletes a given announcement that has not already been posted.',
+            args: [
+                {
+                    key: 'annoID',
+                    type: 'integer',
+                    label: 'Announcement ID',
+                    prompt: 'Enter the ID of the announcement you want to delete:'
+                }
+            ]
+        });
+    }
+
+    public async run(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        let { annoID } = args;
+
+        try {
+            let anno = await Announcement.findOne({ where: { id: annoID } });
+            if (anno) {
+                await anno.destroy();
+                return msg.reply(getMessage(
+                    MessageLevel.Success,
+                    `Announcement "${anno.title}" deleted`
+                ))
+            } else {
+                return msg.reply(getMessage(
+                    MessageLevel.Warning,
+                    `Announcement ${codifyString(annoID)} not found`
+                ))
+            }
+        } catch (err) {
+            console.error(err);
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "An error occured while deleting the announcement.",
+                "Please try again later or check the logs."
+            ));
+        }
+    }
+}
