@@ -13,6 +13,7 @@ import { Playlist } from "./model/Playlist";
 import { PlaylistSong } from "./model/PlaylistSong";
 import { Score, ScoreSettings } from "./model/Score";
 import { RedditAutoPostSettings } from "./model/Reddit";
+import { Announcement } from "./model/Announcement";
 
 export class DbInstance {
     seqInstance:Sequelize;
@@ -55,7 +56,8 @@ export class DbInstance {
             PlaylistSong,
             ScoreSettings,
             Score,
-            RedditAutoPostSettings
+            RedditAutoPostSettings,
+            Announcement
         ]);
 
         this.seqInstance = seq;
