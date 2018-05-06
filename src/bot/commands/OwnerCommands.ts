@@ -1,8 +1,9 @@
 import { CommandoClient, Command, CommandMessage } from "discord.js-commando";
 import { OwnerCommand } from "../basecommands/BaseOwnerCommand";
 import { Message } from "discord.js";
-import { getMessage, MessageLevel } from "../../utils/discord-utils";
+import { getMessage, MessageLevel, codifyString } from "../../utils/discord-utils";
 import { Announcement } from "../../db/model/Announcement";
+import * as moment from "moment";
 
 export class AnnouncementCommand extends OwnerCommand {
     constructor(client:CommandoClient) {
@@ -66,6 +67,37 @@ export class AnnouncementCommand extends OwnerCommand {
             return msg.reply(getMessage(
                 MessageLevel.Error,
                 "An error occured while saving the announcement.",
+                "Please try again later or check the logs."
+            ));
+        }
+    }
+}
+
+export class ListAnnouncementsCommand extends OwnerCommand {
+    constructor(client:CommandoClient) {
+        super(client, {
+            name: 'announcelist',
+            group: 'owner',
+            memberName: 'announcelist',
+            description: 'Lists all pending announcements.'
+        });
+    }
+
+    public async run(msg:CommandMessage, args, fromPattern:boolean):Promise<Message|Message[]> {
+        let self = this;
+        try {
+            let annos = await Announcement.findAll({
+                order: ['postBy']
+            });
+            let messageList = annos
+                .map(a => `- #${codifyString(a.id)}: ${a.title} (${codifyString(`Created: ${moment.utc(a.createdAt).format('YYYY-MM-DD HH:mm:ss z')}, Post By: ${moment.utc(a.postBy).format('YYYY-MM-DD HH:mm:ss z')}`)})`)
+                .join('\n');
+            msg.reply(getMessage(MessageLevel.None, `${annos.length} pending Announcement(s)`, messageList));
+        } catch (err) {
+            console.error(err);
+            return msg.reply(getMessage(
+                MessageLevel.Error,
+                "An error occured while listing the announcements.",
                 "Please try again later or check the logs."
             ));
         }
