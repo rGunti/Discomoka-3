@@ -10,6 +10,7 @@ import * as sqlite from 'sqlite';
 import * as pjson from 'pjson';
 import { TimespanArgument, DateTimeArgument } from './types';
 import { RedditFetcherStock } from './reddit/fetcher';
+import { AnnouncementDaemon } from './announce/daemon';
 
 export class DiscordBot {
     protected instanceID:string;
@@ -202,6 +203,7 @@ export class DiscordBot {
         this.client.user.setActivity(`Ver. ${pjson.version}`);
 
         RedditFetcherStock.initialize(this.client);
+        AnnouncementDaemon.initialize(this.client);
     }
 
     protected onDisconnect(event:CloseEvent) {

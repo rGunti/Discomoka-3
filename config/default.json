@@ -42,5 +42,9 @@
         "poller": {
             "interval": 120
         }
+    },
+    "announcements": {
+        "enabled": true,
+        "interval": 60
     }
 }
