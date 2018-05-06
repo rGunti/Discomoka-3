@@ -8,7 +8,7 @@ import { existsSync } from 'fs';
 import * as config from 'config';
 import * as sqlite from 'sqlite';
 import * as pjson from 'pjson';
-import { TimespanArgument } from './types';
+import { TimespanArgument, DateTimeArgument } from './types';
 
 export class DiscordBot {
     protected instanceID:string;
@@ -149,12 +149,14 @@ export class DiscordBot {
             ['develop', 'Developer-helping Commands'],
             ['admin', 'Admin / Mod Commands'],
             ['music', 'Music Commands'],
+            ['owner', 'Commands for the MASTER'],
             ['setup', 'Setup Commands [for Admins only]'],
             ['score', 'Scoring system Commands'],
             ['voting', 'Commands for Democracy']
         ])
         .registerTypes([
-            TimespanArgument
+            TimespanArgument,
+            DateTimeArgument
         ]);
 
         let commandDirectory = join(__dirname, 'commands');
@@ -164,6 +166,7 @@ export class DiscordBot {
             this.errorLog(`Command Directory ${commandDirectory} does not exist. Are commands built?`);
         }
 
+        // TODO: Migrate to MySQL
         client.setProvider(
             sqlite.open(config.get('discord.settingsStorage'))
                 .then(db => new SQLiteProvider(db))
