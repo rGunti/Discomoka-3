@@ -5,10 +5,10 @@ Discomoka is the spiritual successor to Momoka, a TeamSpeak music bot I develope
 The name "Discomoka" is a combination of Discord and Momoka.
 
 ![Momoka](res/img/momoka.png)
-_Portrait of Momoka (drawn by [TheoreticalTora](http://exploratora.tumblr.com/))_
+_Portrait of Momoka (drawn by [TheoreticalTora](http://exploratora.tumblr.com/){:target="_blank"})_
 
 ## How to add Discomoka to your server
-To add Discomoka to your own Discord server, use the following link: [rgunti.li/discomoka3](http://rgunti.li/discomoka3join)
+To add Discomoka to your own Discord server, use the following link: [rgunti.li/discomoka3](http://rgunti.li/discomoka3join){:target="_blank"}
 
 ## How to run my own instance of Discomoka
 If you prefer to run Discomoka on your own hardware (which you are very welcome to do so), follow the [self-hosting tutorial](self-host.md).
@@ -20,4 +20,4 @@ Check out the [Commands page](./commands/README.md) to get a list of all command
 Discomoka 3 is being developed at the pace needed for our own server. I add feature as they are requested from our server admins. But you are welcome to suggest features by using the [Issue](https://github.com/rgunti/discomoka-3/issues) system here on Github.
 
 ## Licensing
-Discomoka 3 is provided AS IS using the [MIT License](LICENSE).
+Discomoka 3 is provided AS IS using the [MIT License](LICENSE.md).
