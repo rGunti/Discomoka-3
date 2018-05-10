@@ -13,8 +13,10 @@ To add Discomoka to your own Discord server, use the following link: [rgunti.li/
 ## How to run my own instance of Discomoka
 If you prefer to run Discomoka on your own hardware (which you are very welcome to do so), follow the [self-hosting tutorial](self-host.md).
 
-## Commands
+## Commands & Features
 Check out the [Commands page](./commands/README.md) to get a list of all commands on Discomoka.
+
+If you want to know what Discomoka can do, visit the [Features list](features.md).
 
 ## Upcoming Features and Changes
 Discomoka 3 is being developed at the pace needed for our own server. I add feature as they are requested from our server admins. But you are welcome to suggest features by using the [Issue](https://github.com/rgunti/discomoka-3/issues) system here on Github.
