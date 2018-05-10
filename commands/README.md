@@ -1,5 +1,7 @@
 # Commands
-Commands can be executed by using 
+Commands can be executed by using `momoka, command` or mentioning the bot like `@Discomoka command`.
+
+If you are using a self-hosted version of Discomoka, you can configure it.
 
 ## Setup Commands
 | Command     | Description                                    | Detail                              |
