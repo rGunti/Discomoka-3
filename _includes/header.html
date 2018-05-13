@@ -35,7 +35,7 @@
                         {% for cmd in site.data.commandGroups %}
                             {% for group in cmd %}
                                 {% capture commandGroupUrl %}/commands/{{ group[0] }}/{% endcapture %}
-                                <a class="dropdown-item {% if page.url == commandGroupUrl %}active{% endif %}" href="{{ commandGroupUrl | relative_url }}">
+                                <a class="dropdown-item {% if page.url contains commandGroupUrl %}active{% endif %}" href="{{ commandGroupUrl | relative_url }}">
                                 <b>{{ group[0] }}</b> <small>{{ group[1] }}</small>
                                 </a>
                             {% endfor %}
