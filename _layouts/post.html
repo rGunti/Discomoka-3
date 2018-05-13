@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: " en " }}">
+
+{%- include head.html -%}
+
+<body>
+    {% include header.html %}
+
+    <main role="main" class="container">
+        <h1>{{ page.title }}</h1>
+        <p>
+            <small class="text-muted">Posted on <b>{{page.date | date: "%Y-%m-%d"}}</b></small>
+        </p>
+
+        {{ content }}
+
+        
+    </main>
+
+    {% include footer.html %}
+    {% include bootstrap-scripts.html %}
+</body>
+
+</html>

@@ -1,2 +1,9 @@
 title: Discomoka 3
+description: A Discord bot for your music!
 repository: rgunti/Discomoka-3
+permalink: /blog/:categories/:year/:month/:day/:title:output_ext
+
+plugins:
+  - jekyll-feed
+excerpt_separator: <!--more-->
+

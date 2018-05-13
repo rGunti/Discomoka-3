@@ -1,0 +1,20 @@
+---
+title: Change Logs & Updates
+layout: default
+permalink: /blog
+---
+
+<h1>{{page.title}} <small class="text-muted">{{ site.posts.size }} post(s)</small></h1>
+<hr>
+
+{% for post in site.posts %}
+<div class="media">
+    <div class="media-body">
+        <h5 class="mt-0"><a href="{{ post.url }}">{{ post.title }}</a></h5>
+        <p><small class="text-muted">{{ post.date | date: "%Y-%m-%d" }}</small></p>
+        {{ post.excerpt }}
+        <a href="{{ post.url }}">Read more &raquo;</a>
+    </div>
+</div>
+<hr>
+{% endfor %}
