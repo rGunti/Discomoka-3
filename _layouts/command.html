@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="{{ page.lang | default: site.lang | default: " en " }}">
+
+{%- include head.html -%}
+
+<body>
+    {% include header.html %}
+
+    <main role="main" class="container">
+        <h1><code>{{ page.command.name }}</code></h1>
+        <p class="lead">{{ page.command.lead }}</p>
+
+        <dl class="row">
+            <dt class="col-sm-3">Syntax</dt>
+            <dd class="col-sm-9">
+                <code>
+                {{ page.command.name }}
+
+                {% for arg in page.command.args %}
+                    {% if arg.required %}
+                    &lt;<a href="#arg-{{ arg.name }}">{{ arg.name }}</a>&gt;
+                    {% else %}
+                    &#91;<a href="#arg-{{ arg.name }}">{{ arg.name }}</a>&#93;
+                    {% endif %}
+                {% endfor %}
+                </code>
+            </dd>
+            
+            <dt class="col-sm-3">Aliases</dt>
+            <dd class="col-sm-9"><code>{{ page.command.aliases | join: "</code><br><code>" }}</code></dd>
+            
+            <dt class="col-sm-3">Command Group</dt>
+            <dd class="col-sm-9">
+                <a href="{{ "/commands" | relative_url }}/{{ page.command.group }}"><code>{{ page.command.group }}</code></a>
+            </dd>
+
+            <dt class="col-sm-3">Required Permissions</dt>
+            <dd class="col-sm-9">
+                {% if page.command.permissions.length > 0 %}
+                    <code>{{ page.command.permissions | join: "</code><br><code>" }}</code>
+                {% else %}
+                    <i>none required</i>
+                {% endif %}
+            </dd>
+
+            {% if page.command.throttling %}
+                <dt class="col-sm-3">Throttling</dt>
+                <dd class="col-sm-9">
+                    can be used <b>{{ page.command.throttling.usages }} time(s)</b>
+                    every <b>{{ page.command.throttling.duration }} seconds</b>
+                </dd>
+            {% endif %}
+        </dl>
+
+        <!-- Arguments -->
+        <h2 id="arguments">Arguments</h2>
+
+        {% for arg in page.command.args %}
+        <h3 id="arg-{{ arg.name }}">
+            <code>{{ arg.name }}</code>
+            {% if arg.required %}<small class="text-muted">*</small>{% endif %}
+        </h3>
+        <dl class="row">
+            <dt class="col-sm-3">Argument Type</dt>
+            <dd class="col-sm-9"><a href="{{ "/types" | relative_url }}/{{ arg.type }}">{{ arg.type }}</a></dt>
+
+            <dt class="col-sm-3">Required</dt>
+            <dd class="col-sm-9">
+                {% if arg.required %}
+                <span class="fas fa-check"></span>
+                {% else %}
+                -
+                {% endif %}
+            </dd>
+
+            <dt class="col-sm-3">Description</dt>
+            <dd class="col-sm-9">{{ arg.description }}</dd>
+
+            {% unless arg.required %}
+            <dt class="col-sm-3">Default Value</dt>
+            <dd class="col-sm-9"><code>{{ arg.defaultValue }}</code></dd>
+            {% endunless %}
+        </dl>
+        {% endfor %}
+
+        <!-- Examples -->
+        <h2 id="examples">Examples</h2>
+        <ul>
+        {% for example in page.command.examples %}
+        <li><code>{{ example }}</code></li>
+        {% endfor %}
+        </ul>
+
+        <!-- Page Content -->
+        {{ content }}
+    </main>
+
+    {% include footer.html %}
+    {% include bootstrap-scripts.html %}
+</body>
+
+</html>
