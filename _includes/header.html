@@ -1,0 +1,35 @@
+<header>
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <a class="navbar-brand" href="{{ "/" | relative_url }}">Discomoka 3</a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse"
+            aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav mr-auto">
+                {% for link in site.data.nav %}
+                <li class="nav-item">
+                    <a class="nav-link {% if page.url == link.url %}active{% endif %}" href="{{ link.url | relative_url }}">{{ link.title }}</a>
+                </li>
+                {% endfor %}
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle {% if page.url contains "/commands" %}active{% endif %}" href="#" id="navbarCommandsDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Commands
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="navbarCommandsDropdownMenuLink">
+                        <a class="dropdown-item {% if page.url == "/commands/" %}active{% endif %}" href="{{ "/commands" | relative_url }}">All Commands</a>
+                        <div class="dropdown-divider"></div>
+                        {% for cmd in site.data.commandGroups %}
+                            {% for group in cmd %}
+                                {% capture commandGroupUrl %}/commands/{{ group[0] }}/{% endcapture %}
+                                <a class="dropdown-item {% if page.url == commandGroupUrl %}active{% endif %}" href="{{ commandGroupUrl | relative_url }}">
+                                <b>{{ group[0] }}</b> <small>{{ group[1] }}</small>
+                                </a>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </nav>
+</header>

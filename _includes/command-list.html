@@ -1,0 +1,36 @@
+<table class="table">
+    <thead>
+        <tr>
+            <th>Command Name</th>
+            <th>Group</th>
+            <th>Description</th>
+            <th>Aliases</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for cmd in site.data.commands %}
+            {% for command in cmd %}
+                {% if include.groupFilter == command[1].group or include.groupFilter == null %}
+                <tr>
+                    <td><code>{{command[0]}}</code></td>
+                    <td>
+                        <a href="{{ "/commands" | relative_url }}/{{ command[1].group }}"
+                           title="Filter by this Command Group">
+                            {{command[1].group}}
+                        </a>
+                    </td>
+                    <td>{{command[1].description}}</td>
+                    <td><code>{{command[1].aliases | join: "</code><br><code>"}}</code></td>
+                    <td>
+                        <a class="btn btn-primary" href="{{ "/commands" | relative_url }}/{{command[1].group}}/{{ command[0] }}">
+                            Tell me more
+                            <span class="fa fa-fw fa-chevron-right"></span>
+                        </a>
+                    </td>
+                </tr>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    </tbody>
+</table>

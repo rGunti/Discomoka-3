@@ -1,0 +1,18 @@
+- aboutme:
+    group: debug
+    aliases:
+      - me
+      - i
+      - wtfwhoru
+      - hi
+      - e
+    description: Tells you about myself and my wellbeing
+- clear:
+    group: admin
+    aliases:
+      - destroychat
+    description: Clears the current chat
+- testperm:
+    group: debug
+    aliases: []
+    description: Tests a users permission.
