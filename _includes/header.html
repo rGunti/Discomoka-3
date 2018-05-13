@@ -6,18 +6,31 @@
             <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarCollapse">
+            <!-- Left Nav -->
             <ul class="navbar-nav mr-auto">
-                {% for link in site.data.nav %}
+                <!-- Left Nav Items -->
+                {% for link in site.data.leftNav %}
                 <li class="nav-item">
-                    <a class="nav-link {% if page.url == link.url %}active{% endif %}" href="{{ link.url | relative_url }}">{{ link.title }}</a>
+                    <a class="nav-link {% if page.url == link.url %}active{% endif %}" href="{{ link.url | relative_url }}">
+                    {% if link.faicon %}
+                    <span class="{{link.faicon}}"></span>
+                    {% endif %}
+                    {{ link.title }}
+                    </a>
                 </li>
                 {% endfor %}
+
+                <!-- Commands Menu -->
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle {% if page.url contains "/commands" %}active{% endif %}" href="#" id="navbarCommandsDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <span class="fas fa-terminal"></span>
                         Commands
                     </a>
                     <div class="dropdown-menu" aria-labelledby="navbarCommandsDropdownMenuLink">
-                        <a class="dropdown-item {% if page.url == "/commands/" %}active{% endif %}" href="{{ "/commands" | relative_url }}">All Commands</a>
+                        <a class="dropdown-item {% if page.url == "/commands/" %}active{% endif %}" href="{{ "/commands" | relative_url }}">
+                            <span class="fas fa-terminal"></span>
+                            All Commands
+                        </a>
                         <div class="dropdown-divider"></div>
                         {% for cmd in site.data.commandGroups %}
                             {% for group in cmd %}
@@ -29,6 +42,20 @@
                         {% endfor %}
                     </div>
                 </li>
+            </ul>
+
+            <!-- Right Nav -->
+            <ul class="navbar-nav">
+                {% for link in site.data.rightNav %}
+                <li class="nav-item">
+                    <a class="nav-link {% if page.url == link.url %}active{% endif %}" href="{{ link.url | relative_url }}">
+                    {% if link.faicon %}
+                    <span class="{{link.faicon}}"></span>
+                    {% endif %}
+                    {{ link.title }}
+                    </a>
+                </li>
+                {% endfor %}
             </ul>
         </div>
     </nav>

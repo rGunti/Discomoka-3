@@ -1,8 +1,9 @@
 - title: Home
+  faicon: fas fa-home
   url: /
 - title: Change Log & Updates
+  faicon: fas fa-align-left
   url: /blog
 # - title: Commands
+#   faicon: fas fa-terminal
 #   url: /commands
-- title: GitHub Repository
-  url: https://github.com/rgunti/discomoka-3
