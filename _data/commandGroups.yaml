@@ -1,9 +1,9 @@
-- admin: Admin / Mod Commands
-- debug: Debug Commands
-- develop: Developer-helping Commands
-- music: Music Commands
-- owner: Commands for the MASTER
-- reddit: Reddit Post Puller Commands
-- setup: Setup Commands [for Admins only]
-- score: Scoring system Commands
-- voting: Commands for Democracy
+admin: Admin / Mod Commands
+debug: Debug Commands
+develop: Developer-helping Commands
+music: Music Commands
+owner: Commands for the MASTER
+reddit: Reddit Post Puller Commands
+setup: Setup Commands [for Admins only]
+score: Scoring system Commands
+voting: Commands for Democracy
