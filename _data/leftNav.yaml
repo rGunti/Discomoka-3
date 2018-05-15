@@ -1,6 +1,6 @@
-- title: Home
-  faicon: fas fa-home
-  url: /
+#- title: Home
+#  faicon: fas fa-home
+#  url: /
 - title: Change Log & Updates
   faicon: fas fa-align-left
   url: /blog

@@ -9,9 +9,15 @@
             <!-- Left Nav -->
             <ul class="navbar-nav mr-auto">
                 <!-- Left Nav Items -->
+                <li class="nav-item">
+                    <a class="nav-link {% if page.url == '/' %}active{% endif %}" href="{{ '/' | relative_url }}">
+                    <span class="fas fa-home"></span>
+                    Home
+                    </a>
+                </li>
                 {% for link in site.data.leftNav %}
                 <li class="nav-item">
-                    <a class="nav-link {% if page.url == link.url %}active{% endif %}" href="{{ link.url | relative_url }}">
+                    <a class="nav-link {% if page.url == link.url or page.url contains link.url %}active{% endif %}" href="{{ link.url | relative_url }}">
                     {% if link.faicon %}
                     <span class="{{link.faicon}}"></span>
                     {% endif %}
@@ -46,7 +52,7 @@
             <ul class="navbar-nav">
                 {% for link in site.data.rightNav %}
                 <li class="nav-item">
-                    <a class="nav-link {% if page.url == link.url %}active{% endif %}" href="{{ link.url | relative_url }}">
+                    <a class="nav-link {% if page.url == link.url contains link.url %}active{% endif %}" href="{{ link.url | relative_url }}">
                     {% if link.faicon %}
                     <span class="{{link.faicon}}"></span>
                     {% endif %}
