@@ -4,6 +4,9 @@
 - title: Change Log & Updates
   faicon: fas fa-align-left
   url: /blog
+- title: Argument Data Types
+  faicon: fas fa-code
+  url: /types
 # - title: Commands
 #   faicon: fas fa-terminal
 #   url: /commands
