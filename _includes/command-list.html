@@ -2,7 +2,9 @@
     <thead>
         <tr>
             <th>Command Name</th>
+            {% if include.groupFilter == null %}
             <th>Group</th>
+            {% endif %}
             <th>Description</th>
             <th>Aliases</th>
             <th></th>
@@ -13,15 +15,18 @@
             {% if include.groupFilter == command[1].group or include.groupFilter == null %}
             <tr>
                 <td><code>{{command[0]}}</code></td>
+                {% if include.groupFilter == null %}
+                {% assign group = command[1].group %}
                 <td>
-                    <a href="{{ "/commands" | relative_url }}/{{ command[1].group }}"
-                        title="Filter by this Command Group">
-                        {{command[1].group}}
+                    <a href="{{ "/commands" | relative_url }}/{{ group }}"
+                       title="Filter by this Command Group">
+                        {{ site.data.commandGroups[group] }}
                     </a>
                 </td>
+                {% endif %}
                 <td>{{command[1].description}}</td>
                 <td><code>{{command[1].aliases | join: "</code><br><code>"}}</code></td>
-                <td>
+                <td class="text-right">
                     <a class="btn btn-primary" href="{{ "/commands" | relative_url }}/{{command[1].group}}/{{ command[0] }}">
                         Tell me more
                         <span class="fa fa-fw fa-chevron-right"></span>

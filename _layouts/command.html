@@ -31,7 +31,9 @@
             
             <dt class="col-sm-3">Command Group</dt>
             <dd class="col-sm-9">
-                <a href="{{ "/commands" | relative_url }}/{{ page.command.group }}"><code>{{ page.command.group }}</code></a>
+                <a href="{{ "/commands" | relative_url }}/{{ page.command.group }}">
+                    {{ site.data.commandGroups[page.command.group] }}
+                </a>
             </dd>
 
             <dt class="col-sm-3">Required Permissions</dt>
